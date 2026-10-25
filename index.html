@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6366f1">
+<title>自律打卡</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="自律打卡">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --card: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --ring: #e5e7eb;
+    --success: #10b981;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --card: #1f2937;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --ring: #374151;
+    }
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { max-width: 600px; margin: 0 auto; padding: 28px 16px 64px; }
+
+  /* ---------- 顶部 ---------- */
+  .hero { color: #fff; padding: 4px 4px 20px; }
+  .hero h1 { font-size: 28px; font-weight: 800; letter-spacing: .5px; }
+  .date { opacity: .92; margin-top: 6px; font-size: 15px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+  .stat {
+    background: rgba(255, 255, 255, .14);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 16px;
+    padding: 14px;
+  }
+  .stat .num { font-size: 24px; font-weight: 800; line-height: 1; }
+  .stat .label { font-size: 12px; opacity: .85; margin-top: 6px; }
+
+  /* ---------- 卡片 ---------- */
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .14);
+  }
+  .section-title {
+    font-size: 17px; font-weight: 700;
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .section-title .sub { font-size: 13px; color: var(--muted); font-weight: 500; }
+
+  .progress { height: 8px; background: var(--ring); border-radius: 999px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    border-radius: 999px;
+    transition: width .3s ease;
+  }
+
+  /* ---------- 习惯列表 ---------- */
+  .habit-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .habit {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px; border: 1px solid var(--ring); border-radius: 16px;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .habit:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0, 0, 0, .08); }
+  .habit .icon {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 24px; flex-shrink: 0;
+  }
+  .habit .info { flex: 1; min-width: 0; }
+  .habit .name { font-weight: 700; font-size: 16px; }
+  .habit .note { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .habit .streak { font-size: 12px; font-weight: 700; color: #f59e0b; margin-top: 4px; }
+
+  .check {
+    width: 46px; height: 46px; border-radius: 50%;
+    border: 2px solid var(--ring); background: transparent;
+    cursor: pointer; font-size: 20px; font-weight: 800;
+    display: grid; place-items: center; flex-shrink: 0;
+    transition: all .15s ease;
+  }
+  .check:hover { border-color: var(--success); }
+  .check.done { background: var(--success); border-color: var(--success); color: #fff; }
+
+  /* ---------- 健身计划 ---------- */
+  .day-chips { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 14px; }
+  .day-chip {
+    position: relative; border: 1px solid var(--ring); border-radius: 12px;
+    padding: 9px 2px 10px; text-align: center; cursor: pointer;
+    transition: transform .1s ease;
+  }
+  .day-chip:hover { transform: translateY(-1px); }
+  .day-chip.today { border-color: #6366f1; box-shadow: 0 0 0 1px #6366f1; }
+  .day-chip .day-name { font-size: 11px; color: var(--muted); }
+  .day-chip .day-muscle { font-size: 14px; font-weight: 800; margin-top: 4px; }
+  .day-check {
+    position: absolute; top: -6px; right: -6px; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--success); color: #fff; font-size: 11px;
+    display: grid; place-items: center;
+  }
+
+  .today-muscle { font-size: 14px; color: var(--muted); }
+  .workout-btn {
+    width: 100%; margin-top: 10px; padding: 14px; border-radius: 14px;
+    border: 2px solid var(--ring); background: transparent; color: var(--text);
+    font-size: 15px; font-weight: 700; cursor: pointer; transition: all .15s ease;
+  }
+  .workout-btn:hover { border-color: var(--success); }
+  .workout-btn.done { background: var(--success); border-color: var(--success); color: #fff; }
+  .edit-hint { font-size: 11px; color: var(--muted); margin-top: 10px; }
+
+  /* ---------- 自律计时 ---------- */
+  .discipline-body { text-align: center; padding: 6px 0 2px; }
+  .discipline-hint { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+  .discipline-count-label { font-size: 14px; color: var(--muted); }
+  .discipline-days {
+    font-size: 56px; font-weight: 800; line-height: 1.1;
+    background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .discipline-days span { font-size: 20px; font-weight: 700; }
+  .discipline-since { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .discipline-btn { margin-top: 18px; padding: 12px 26px; border-radius: 999px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s ease; }
+  .discipline-start { background: linear-gradient(90deg, #10b981, #34d399); color: #fff; box-shadow: 0 6px 16px rgba(16, 185, 129, .3); }
+  .discipline-start:hover { transform: translateY(-1px); }
+  .discipline-reset { background: transparent; border: 1px solid var(--ring); color: var(--muted); }
+  .discipline-reset:hover { border-color: #ef4444; color: #ef4444; }
+
+  /* ---------- 拍照打卡 ---------- */
+  .photo-hint { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .photo-btn {
+    width: 100%; padding: 14px; border: none; border-radius: 14px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6); color: #fff;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 16px rgba(99, 102, 241, .35);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .photo-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(99, 102, 241, .45); }
+
+  .gallery { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; margin-top: 14px; }
+  .thumb {
+    position: relative; flex-shrink: 0; width: 72px; height: 72px;
+    border-radius: 12px; overflow: hidden; border: 1px solid var(--ring); cursor: pointer;
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb .thumb-date {
+    position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0, 0, 0, .55);
+    color: #fff; font-size: 9px; text-align: center; padding: 2px 0;
+  }
+  .gallery-empty { color: var(--muted); font-size: 13px; }
+
+  /* ---------- 成就墙 ---------- */
+  .achievements { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 12px; }
+  .achievement {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-align: center; padding: 14px 6px;
+    border: 1px solid var(--ring); border-radius: 14px;
+    transition: transform .12s ease;
+  }
+  .achievement:hover { transform: translateY(-2px); }
+  .achievement .badge { font-size: 30px; line-height: 1; filter: grayscale(1) opacity(.4); transition: filter .25s ease; }
+  .achievement.unlocked .badge { filter: none; }
+  .achievement.unlocked { border-color: #fcd34d; }
+  .achievement .a-name { font-size: 11px; font-weight: 700; line-height: 1.25; }
+  .achievement .a-desc { font-size: 10px; color: var(--muted); line-height: 1.3; }
+
+  /* ---------- 底部 ---------- */
+  footer { margin-top: 24px; text-align: center; color: rgba(255, 255, 255, .85); }
+  .reset {
+    background: none; border: 1px solid rgba(255, 255, 255, .4); color: #fff;
+    border-radius: 999px; padding: 8px 18px; font-size: 13px; cursor: pointer;
+  }
+  .reset:hover { background: rgba(255, 255, 255, .15); }
+  .tip { font-size: 12px; opacity: .8; margin-top: 12px; }
+
+  /* ---------- 提示 & 彩带 ---------- */
+  .toast {
+    position: fixed; top: 24px; left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #1f2937; color: #fff;
+    padding: 12px 20px; border-radius: 999px; font-size: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+    opacity: 0; transition: all .3s ease; z-index: 1000; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .confetti {
+    position: fixed; top: -10px; width: 10px; height: 16px; z-index: 999;
+    border-radius: 2px;
+    animation: fall 2.5s ease-in forwards;
+  }
+  @keyframes fall {
+    to { transform: translate(var(--x, 0px), 110vh) rotate(720deg); opacity: .9; }
+  }
+
+  /* ---------- 图片大图 ---------- */
+  .lightbox { position: fixed; inset: 0; z-index: 1100; display: none; align-items: center; justify-content: center; }
+  .lightbox-bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .82); }
+  .lightbox-body { position: relative; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .lightbox-body img { max-width: 90vw; max-height: 72vh; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, .5); }
+  .lightbox-info { display: flex; align-items: center; gap: 14px; color: #fff; }
+  .lightbox-del { background: #ef4444; color: #fff; border: none; border-radius: 999px; padding: 8px 16px; cursor: pointer; font-size: 13px; }
+  .lightbox-x { position: absolute; top: -42px; right: 0; background: rgba(255, 255, 255, .2); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <h1>🌟 自律打卡</h1>
+      <div class="date" id="date"></div>
+      <div class="stats" id="stats"></div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2 class="section-title">今日习惯 <span class="sub" id="today-sub"></span></h2>
+        <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+        <ul class="habit-list" id="habit-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">🧘 自律</h2>
+        <div class="discipline-body" id="discipline-body"></div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">🏋️ 健身计划 <span class="sub" id="fitness-sub"></span></h2>
+        <div class="day-chips" id="week"></div>
+        <p class="today-muscle" id="today-muscle"></p>
+        <button class="workout-btn" id="workout-btn"></button>
+        <p class="edit-hint">点击星期可切换部位：胸 → 肩 → 背 → 腿 → 休息</p>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">📷 拍照打卡 <span class="sub" id="photo-sub"></span></h2>
+        <p class="photo-hint">定期拍一张正面或侧面照，记录身材变化。</p>
+        <button class="photo-btn" id="photo-btn">📷 拍照 / 选择照片</button>
+        <input type="file" id="photo-input" accept="image/*" style="display:none">
+        <div class="gallery" id="gallery"></div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">成就墙 <span class="sub" id="achievement-sub"></span></h2>
+        <div class="achievements" id="achievements"></div>
+      </section>
+    </main>
+
+    <footer>
+      <button class="reset" id="reset">清空全部数据</button>
+      <p class="tip">数据保存在本机浏览器中，换浏览器或清理缓存会丢失。</p>
+    </footer>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-bg" id="lightbox-close"></div>
+    <div class="lightbox-body">
+      <img id="lightbox-img" src="" alt="照片">
+      <div class="lightbox-info">
+        <span id="lightbox-date"></span>
+        <button class="lightbox-del" id="lightbox-del">删除这张</button>
+      </div>
+      <button class="lightbox-x" id="lightbox-x">✕</button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'zilv-daka-v1';
+
+  // 在这里增删你的习惯（图标、颜色、说明都可以自己改）
+  var HABITS = [
+    { id: 'early-sleep',   name: '早睡', note: '23:00 前睡觉', icon: '🌙', color: '#6366f1' },
+    { id: 'early-rise',    name: '早起', note: '08:00 前起床', icon: '🌅', color: '#f59e0b' },
+    { id: 'mkt-portfolio', name: '做 mkt 作品集', note: '每天推进一点', icon: '🎨', color: '#8b5cf6' },
+    { id: 'words',         name: '背单词', note: '背 30 个单词', icon: '🔤', color: '#3b82f6' },
+    { id: 'water',         name: '喝水', note: '喝 8 杯水', icon: '💧', color: '#06b6d4' }
+  ];
+
+  // 健身部位（顺序即点击切换的顺序）
+  var MUSCLES = [
+    { id: 'chest',    name: '胸',   color: '#ef4444' },
+    { id: 'shoulder', name: '肩',   color: '#f59e0b' },
+    { id: 'back',     name: '背',   color: '#3b82f6' },
+    { id: 'leg',      name: '腿',   color: '#10b981' },
+    { id: 'rest',     name: '休息', color: '#9ca3af' }
+  ];
+
+  var DAY_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+
+  function defaultPlan() {
+    // 键为 getDay()：0=周日 1=周一 … 6=周六。默认：腿一周一练。
+    return { '0': 'rest', '1': 'chest', '2': 'back', '3': 'shoulder', '4': 'leg', '5': 'chest', '6': 'back' };
+  }
+
+  // 成就配置：type 为 streak（连续天数，取所有习惯的最长连续）或 total（累计打卡次数）
+  var ACHIEVEMENTS = [
+    { id: 'first',      type: 'total',  target: 1,   icon: '🌱', name: '迈出第一步', desc: '完成第一次打卡' },
+    { id: 'total-10',   type: 'total',  target: 10,  icon: '📅', name: '小有成就', desc: '累计打卡 10 次' },
+    { id: 'total-50',   type: 'total',  target: 50,  icon: '📚', name: '日积月累', desc: '累计打卡 50 次' },
+    { id: 'total-100',  type: 'total',  target: 100, icon: '⚔️', name: '百炼成钢', desc: '累计打卡 100 次' },
+    { id: 'total-365',  type: 'total',  target: 365, icon: '🐉', name: '自律大师', desc: '累计打卡 365 次' },
+    { id: 'streak-3',   type: 'streak', target: 3,   icon: '🔥', name: '小火苗', desc: '任一习惯连续 3 天' },
+    { id: 'streak-7',   type: 'streak', target: 7,   icon: '🌟', name: '一周之约', desc: '任一习惯连续 7 天' },
+    { id: 'streak-14',  type: 'streak', target: 14,  icon: '⚡', name: '半月坚持', desc: '任一习惯连续 14 天' },
+    { id: 'streak-21',  type: 'streak', target: 21,  icon: '💪', name: '习惯初成', desc: '任一习惯连续 21 天' },
+    { id: 'streak-30',  type: 'streak', target: 30,  icon: '🏆', name: '三十而立', desc: '任一习惯连续 30 天' },
+    { id: 'streak-60',  type: 'streak', target: 60,  icon: '👑', name: '双月坚持', desc: '任一习惯连续 60 天' },
+    { id: 'streak-100', type: 'streak', target: 100, icon: '💎', name: '百日筑基', desc: '任一习惯连续 100 天' },
+    { id: 'disc-7',   type: 'discipline', target: 7,   icon: '🏅', name: '自律一周', desc: '自律坚持 7 天' },
+    { id: 'disc-30',  type: 'discipline', target: 30,  icon: '🥇', name: '自律一月', desc: '自律坚持 30 天' },
+    { id: 'disc-90',  type: 'discipline', target: 90,  icon: '🎖️', name: '自律达人', desc: '自律坚持 90 天' },
+    { id: 'disc-180', type: 'discipline', target: 180, icon: '💎', name: '自律半年', desc: '自律坚持 180 天' },
+    { id: 'disc-365', type: 'discipline', target: 365, icon: '🐉', name: '自律一周年', desc: '自律坚持 365 天' }
+  ];
+
+  var data = load();
+  var currentPhotoId = null;
+
+  // ---------- 照片存储（优先 IndexedDB，不支持时退回 localStorage） ----------
+  var photoStore = (function () {
+    var DB_NAME = 'zilv-daka-db';
+    var STORE = 'photos';
+    var LS_KEY = 'zilv-daka-photos';
+    var useIdb = typeof window.indexedDB !== 'undefined';
+
+    function openDb() {
+      return new Promise(function (resolve, reject) {
+        var req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = function (e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'id' });
+        };
+        req.onsuccess = function (e) { resolve(e.target.result); };
+        req.onerror = function (e) { reject(e.target.error); };
+      });
+    }
+    function lsAll() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch (e) { return []; }
+    }
+    function lsSave(list) {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    return {
+      add: function (rec) {
+        if (useIdb) {
+          return openDb().then(function (db) {
+            return new Promise(function (resolve, reject) {
+              var tx = db.transaction(STORE, 'readwrite');
+              tx.objectStore(STORE).put(rec);
+              tx.oncomplete = function () { db.close(); resolve(); };
+              tx.onerror = function (e) { db.close(); reject(e.target.error); };
+            });
+          });
+        }
+        var list = lsAll(); list.push(rec); lsSave(list);
+        return Promise.resolve();
+      },
+      all: function () {
+        if (useIdb) {
+          return openDb().then(function (db) {
+            return new Promise(function (resolve, reject) {
+              var req = db.transaction(STORE, 'readonly').objectStore(STORE).getAll();
+              req.onsuccess = function () { db.close(); resolve(req.result || []); };
+              req.onerror = function (e) { db.close(); reject(e.target.error); };
+            });
+          });
+        }
+        return Promise.resolve(lsAll());
+      },
+      remove: function (id) {
+        if (useIdb) {
+          return openDb().then(function (db) {
+            return new Promise(function (resolve, reject) {
+              var tx = db.transaction(STORE, 'readwrite');
+              tx.objectStore(STORE).delete(id);
+              tx.oncomplete = function () { db.close(); resolve(); };
+              tx.onerror = function (e) { db.close(); reject(e.target.error); };
+            });
+          });
+        }
+        lsSave(lsAll().filter(function (p) { return p.id !== id; }));
+        return Promise.resolve();
+      },
+      clear: function () {
+        if (useIdb) {
+          return openDb().then(function (db) {
+            return new Promise(function (resolve, reject) {
+              var tx = db.transaction(STORE, 'readwrite');
+              tx.objectStore(STORE).clear();
+              tx.oncomplete = function () { db.close(); resolve(); };
+              tx.onerror = function (e) { db.close(); reject(e.target.error); };
+            });
+          });
+        }
+        lsSave([]);
+        return Promise.resolve();
+      }
+    };
+  })();
+
+  function load() {
+    var d = { checkins: {}, achievements: {}, workouts: {}, plan: defaultPlan(), disciplineStart: null };
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var p = JSON.parse(raw);
+        for (var k in p) if (p.hasOwnProperty(k)) d[k] = p[k];
+      }
+    } catch (e) {}
+    if (!d.plan || typeof d.plan !== 'object') d.plan = defaultPlan();
+    if (!d.workouts) d.workouts = {};
+    return d;
+  }
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function fmt(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function dayNum(dateStr) {
+    var p = dateStr.split('-').map(Number);
+    return Math.floor(Date.UTC(p[0], p[1] - 1, p[2]) / 86400000);
+  }
+
+  function todayStr() { return fmt(new Date()); }
+
+  function checkedDates(habitId) {
+    var out = [];
+    for (var date in data.checkins) {
+      if (data.checkins[date].indexOf(habitId) !== -1) out.push(date);
+    }
+    return out;
+  }
+
+  function currentStreak(habitId) {
+    var set = {};
+    checkedDates(habitId).forEach(function (d) { set[d] = true; });
+    var d = new Date();
+    var streak = 0;
+    if (!set[fmt(d)]) d.setDate(d.getDate() - 1);
+    while (set[fmt(d)]) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    }
+    return streak;
+  }
+
+  function bestStreak(habitId) {
+    var days = checkedDates(habitId).map(dayNum).sort(function (a, b) { return a - b; });
+    var best = 0, run = 0, prev = null;
+    for (var i = 0; i < days.length; i++) {
+      run = (prev !== null && days[i] === prev + 1) ? run + 1 : 1;
+      if (run > best) best = run;
+      prev = days[i];
+    }
+    return best;
+  }
+
+  function bestStreakAny() {
+    var best = 0;
+    HABITS.forEach(function (h) { best = Math.max(best, bestStreak(h.id)); });
+    return best;
+  }
+
+  function totalCount() {
+    // 只统计当前存在的习惯，避免已删除/改名的习惯残留历史影响累计数
+    var known = {};
+    HABITS.forEach(function (h) { known[h.id] = true; });
+    var sum = 0;
+    for (var date in data.checkins) {
+      var ids = data.checkins[date];
+      for (var i = 0; i < ids.length; i++) if (known[ids[i]]) sum++;
+    }
+    return sum;
+  }
+
+  function isCheckedToday(habitId) {
+    var list = data.checkins[todayStr()];
+    return list ? list.indexOf(habitId) !== -1 : false;
+  }
+
+  function muscleById(id) {
+    for (var i = 0; i < MUSCLES.length; i++) if (MUSCLES[i].id === id) return MUSCLES[i];
+    return MUSCLES[MUSCLES.length - 1];
+  }
+
+  function weekDates() {
+    var now = new Date();
+    var monday = new Date(now);
+    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    var arr = [];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      arr.push({ date: fmt(d), day: d.getDay() });
+    }
+    return arr;
+  }
+
+  function toggle(habitId) {
+    var d = todayStr();
+    var list = data.checkins[d] ? data.checkins[d].slice() : [];
+    if (list.indexOf(habitId) !== -1) {
+      data.checkins[d] = list.filter(function (id) { return id !== habitId; });
+      if (data.checkins[d].length === 0) delete data.checkins[d];
+    } else {
+      data.checkins[d] = list.concat(habitId);
+    }
+    save();
+    render();
+  }
+
+  function toggleWorkout() {
+    var d = todayStr();
+    if (data.workouts[d]) delete data.workouts[d];
+    else data.workouts[d] = true;
+    save();
+    renderFitness();
+  }
+
+  function cyclePlan(dayKey) {
+    var ids = MUSCLES.map(function (m) { return m.id; });
+    var cur = data.plan[dayKey] || 'rest';
+    var idx = ids.indexOf(cur);
+    data.plan[dayKey] = ids[(idx + 1) % ids.length];
+    save();
+    renderFitness();
+  }
+
+  function checkAchievements() {
+    var best = bestStreakAny();
+    var total = totalCount();
+    var disc = disciplineDays();
+    var newly = [];
+    ACHIEVEMENTS.forEach(function (a) {
+      if (data.achievements[a.id]) return;
+      var met;
+      if (a.type === 'streak') met = best >= a.target;
+      else if (a.type === 'discipline') met = disc >= a.target;
+      else met = total >= a.target;
+      if (met) {
+        data.achievements[a.id] = todayStr();
+        newly.push(a);
+      }
+    });
+    if (newly.length) {
+      save();
+      newly.forEach(function (a) { toast('🎉 解锁成就：' + a.icon + ' ' + a.name); });
+      confetti();
+    }
+  }
+
+  function render() {
+    checkAchievements();
+    renderDate();
+    renderStats();
+    renderHabits();
+    renderDiscipline();
+    renderFitness();
+    renderAchievements();
+    renderPhotos();
+  }
+
+  function renderDate() {
+    document.getElementById('date').textContent =
+      new Date().toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function renderStats() {
+    var done = HABITS.filter(isCheckedToday).length;
+    document.getElementById('stats').innerHTML =
+      statTile(done + '/' + HABITS.length, '今日完成') +
+      statTile(totalCount(), '累计打卡') +
+      statTile(bestStreakAny(), '最长连续(天)');
+  }
+
+  function statTile(num, label) {
+    return '<div class="stat"><div class="num">' + num + '</div><div class="label">' + label + '</div></div>';
+  }
+
+  function renderHabits() {
+    var done = HABITS.filter(isCheckedToday).length;
+    document.getElementById('today-sub').textContent = done + ' / ' + HABITS.length;
+    document.getElementById('progress-fill').style.width = (done / HABITS.length * 100) + '%';
+
+    document.getElementById('habit-list').innerHTML = HABITS.map(function (h) {
+      var checked = isCheckedToday(h.id);
+      var streak = currentStreak(h.id);
+      return '<li class="habit">' +
+        '<div class="icon" style="background:' + h.color + '22">' + h.icon + '</div>' +
+        '<div class="info">' +
+          '<div class="name">' + h.name + '</div>' +
+          '<div class="note">' + h.note + '</div>' +
+          '<div class="streak">🔥 连续 ' + streak + ' 天</div>' +
+        '</div>' +
+        '<button class="check' + (checked ? ' done' : '') + '" data-habit="' + h.id + '" aria-label="打卡 ' + h.name + '">' +
+          (checked ? '✓' : '') +
+        '</button>' +
+      '</li>';
+    }).join('');
+  }
+
+  function disciplineDays() {
+    if (!data.disciplineStart) return 0;
+    return dayNum(todayStr()) - dayNum(data.disciplineStart) + 1;
+  }
+
+  function startDiscipline() {
+    data.disciplineStart = todayStr();
+    save();
+    renderDiscipline();
+  }
+
+  function resetDiscipline() {
+    if (confirm('确定要重新开始吗？将从今天重新计为第 1 天。')) {
+      data.disciplineStart = todayStr();
+      save();
+      renderDiscipline();
+    }
+  }
+
+  function renderDiscipline() {
+    var body = document.getElementById('discipline-body');
+    var start = data.disciplineStart;
+    if (!start) {
+      body.innerHTML =
+        '<p class="discipline-hint">还没开始？点下面按钮，从今天开始计时。</p>' +
+        '<button class="discipline-btn discipline-start" data-act="start">开始自律</button>';
+      return;
+    }
+    body.innerHTML =
+      '<div class="discipline-count-label">已坚持</div>' +
+      '<div class="discipline-days">' + disciplineDays() + ' <span>天</span></div>' +
+      '<div class="discipline-since">开始于 ' + start + '</div>' +
+      '<button class="discipline-btn discipline-reset" data-act="reset">重新开始（破戒归零）</button>';
+  }
+
+  function renderFitness() {
+    var week = weekDates();
+    var today = todayStr();
+    var weekCount = week.filter(function (x) { return data.workouts[x.date]; }).length;
+    var totalWorkouts = Object.keys(data.workouts).length;
+    document.getElementById('fitness-sub').textContent = '本周 ' + weekCount + ' 练 · 累计 ' + totalWorkouts + ' 练';
+
+    document.getElementById('week').innerHTML = week.map(function (x) {
+      var m = muscleById(data.plan[x.day]);
+      var done = !!data.workouts[x.date];
+      var isToday = x.date === today;
+      return '<div class="day-chip' + (isToday ? ' today' : '') + '" data-day="' + x.day + '"' +
+        ' style="background:' + m.color + '18">' +
+        '<div class="day-name">' + DAY_LABELS[x.day] + '</div>' +
+        '<div class="day-muscle" style="color:' + m.color + '">' + m.name + '</div>' +
+        (done ? '<div class="day-check">✓</div>' : '') +
+      '</div>';
+    }).join('');
+
+    var todayMuscle = muscleById(data.plan[new Date().getDay()]);
+    document.getElementById('today-muscle').textContent = '今日训练 · ' + todayMuscle.name;
+    var workoutDone = !!data.workouts[today];
+    var btn = document.getElementById('workout-btn');
+    btn.textContent = workoutDone ? '✓ 已完成今日训练' : '完成今日训练';
+    btn.className = 'workout-btn' + (workoutDone ? ' done' : '');
+  }
+
+  function renderPhotos() {
+    photoStore.all().then(function (list) {
+      list.sort(function (a, b) { return b.ts - a.ts; });
+      document.getElementById('photo-sub').textContent = '已记录 ' + list.length + ' 张';
+      var g = document.getElementById('gallery');
+      if (!list.length) {
+        g.innerHTML = '<div class="gallery-empty">还没有照片，点击上方按钮拍第一张吧。</div>';
+        return;
+      }
+      g.innerHTML = list.map(function (p) {
+        return '<div class="thumb" data-id="' + p.id + '">' +
+          '<img src="' + p.dataUrl + '" alt="' + p.date + '">' +
+          '<div class="thumb-date">' + p.date.slice(5) + '</div>' +
+        '</div>';
+      }).join('');
+    });
+  }
+
+  function renderAchievements() {
+    var count = ACHIEVEMENTS.filter(function (a) { return data.achievements[a.id]; }).length;
+    document.getElementById('achievement-sub').textContent = count + ' / ' + ACHIEVEMENTS.length;
+
+    document.getElementById('achievements').innerHTML = ACHIEVEMENTS.map(function (a) {
+      var u = data.achievements[a.id];
+      var cls = u ? 'achievement unlocked' : 'achievement';
+      var title = u ? (a.name + ' · 已于 ' + u + ' 解锁') : ('未解锁 · ' + a.desc);
+      return '<div class="' + cls + '" title="' + title + '">' +
+        '<div class="badge">' + a.icon + '</div>' +
+        '<div class="a-name">' + a.name + '</div>' +
+        '<div class="a-desc">' + a.desc + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function compressImage(file, cb) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var maxSide = 900, w = img.width, h = img.height;
+        if (w > h && w > maxSide) { h = Math.round(h * maxSide / w); w = maxSide; }
+        else if (h >= w && h > maxSide) { w = Math.round(w * maxSide / h); h = maxSide; }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.onerror = function () { cb(reader.result); };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function addPhoto(dataUrl) {
+    var now = new Date();
+    photoStore.add({
+      id: 'p' + now.getTime() + '-' + Math.random().toString(36).slice(2, 6),
+      date: fmt(now),
+      ts: now.getTime(),
+      dataUrl: dataUrl
+    }).then(function () { renderPhotos(); });
+  }
+
+  function openLightbox(p) {
+    currentPhotoId = p.id;
+    document.getElementById('lightbox-img').src = p.dataUrl;
+    document.getElementById('lightbox-date').textContent = p.date;
+    document.getElementById('lightbox').style.display = 'flex';
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    currentPhotoId = null;
+  }
+
+  function toast(msg) {
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(function () { t.classList.add('show'); });
+    setTimeout(function () {
+      t.classList.remove('show');
+      setTimeout(function () { t.remove(); }, 300);
+    }, 2600);
+  }
+
+  function confetti() {
+    var colors = ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#8b5cf6'];
+    for (var i = 0; i < 40; i++) {
+      var c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDelay = Math.random() * 0.5 + 's';
+      c.style.setProperty('--x', Math.round(Math.random() * 200 - 100) + 'px');
+      document.body.appendChild(c);
+      setTimeout(function (el) { el.remove(); }, 2500, c);
+    }
+  }
+
+  // ---------- 事件 ----------
+  document.getElementById('habit-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-habit]');
+    if (btn) toggle(btn.getAttribute('data-habit'));
+  });
+
+  document.getElementById('discipline-body').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    if (b.getAttribute('data-act') === 'start') startDiscipline();
+    else if (b.getAttribute('data-act') === 'reset') resetDiscipline();
+  });
+
+  document.getElementById('week').addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-day]');
+    if (chip) cyclePlan(chip.getAttribute('data-day'));
+  });
+
+  document.getElementById('workout-btn').addEventListener('click', toggleWorkout);
+
+  document.getElementById('photo-btn').addEventListener('click', function () {
+    document.getElementById('photo-input').click();
+  });
+
+  document.getElementById('photo-input').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    compressImage(file, function (dataUrl) { addPhoto(dataUrl); });
+    e.target.value = '';
+  });
+
+  document.getElementById('gallery').addEventListener('click', function (e) {
+    var thumb = e.target.closest('[data-id]');
+    if (!thumb) return;
+    var id = thumb.getAttribute('data-id');
+    photoStore.all().then(function (list) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) { openLightbox(list[i]); return; }
+      }
+    });
+  });
+
+  document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-x').addEventListener('click', closeLightbox);
+  document.getElementById('lightbox-del').addEventListener('click', function () {
+    if (!currentPhotoId) return;
+    if (!confirm('删除这张照片？')) return;
+    photoStore.remove(currentPhotoId).then(function () { closeLightbox(); renderPhotos(); });
+  });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    if (confirm('确定要清空所有打卡记录、健身计划和照片吗？此操作不可恢复。')) {
+      data = { checkins: {}, achievements: {}, workouts: {}, plan: defaultPlan() };
+      save();
+      photoStore.clear().then(function () { render(); });
+    }
+  });
+
+  render();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>
