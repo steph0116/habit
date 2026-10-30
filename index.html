@@ -795,24 +795,32 @@
   }
 
   // ---------- 3D 小人（GLB 人体模型优先，程序化小人为兜底） ----------
-  // 每个等级一个 GLB 文件（0=最瘦 → 5=最壮），放在 index.html 同目录。
+  // 按等级（0=最瘦 → 5=最壮）各指定一个模型；同名文件只加载一次并复用。
   // 文件缺失或加载失败时，会自动退回内置的程序化小人。
   var AVATAR_GLB = [
-    'avatar-0.glb',
-    'avatar-1.glb',
-    'avatar-2.glb',
-    'avatar-3.glb',
-    'avatar-4.glb',
-    'avatar-5.glb'
+    'avatar-thin.glb',   // 0 初始（瘦）
+    'avatar-thin.glb',   // 1 小有变化
+    'avatar-thin.glb',   // 2 初见线条
+    'avatar-muscle.glb', // 3 有型（开始变壮）
+    'avatar-muscle.glb', // 4 强壮
+    'avatar-muscle.glb'  // 5 健美（最壮）
   ];
+  // 给无贴图的灰模上肤色（Male base 灰模 → 皮肤色）
+  var GLB_TINT = { 'avatar-thin.glb': 0xf2b98a };
   var GLB_HEIGHT = 1.72; // 归一化后的模型高度，与内置小人一致
+  // 随等级放大（0 级最小 → 5 级最大）。
+  var LEVEL_SCALE = [0.85, 0.88, 0.91, 0.94, 0.97, 1.0];
 
   var avatar3d = (function () {
     var renderer, scene, camera, group, statusEl;
     var angleY = 0.6, angleX = -0.12;
     var stage = 0;
-    var glbState = {}; // stage -> 'loading' | 'done' | 'fail'
-    var glbCache = {}; // stage -> THREE.Group（归一化后复用，不 dispose）
+    var glbState = {}; // url -> 'loading' | 'done' | 'fail'
+    var glbCache = {}; // url -> THREE.Group（归一化后复用，不 dispose）
+
+    function glbUrl(s) {
+      return typeof AVATAR_GLB === 'string' ? AVATAR_GLB : AVATAR_GLB[s];
+    }
 
     function skinMat(color) {
       return new THREE.MeshStandardMaterial({ color: color, roughness: 0.55, metalness: 0.03 });
@@ -895,6 +903,7 @@
         }
       }
 
+      g.userData.disposable = true;
       return g;
     }
 
@@ -919,7 +928,7 @@
       while (group.children.length) {
         var child = group.children[0];
         group.remove(child);
-        if (!child.userData || !child.userData.cached) disposeObj(child);
+        if (child.userData && child.userData.disposable) disposeObj(child);
       }
     }
 
@@ -940,22 +949,31 @@
     }
 
     function loadGlb(s, cb) {
-      var url = AVATAR_GLB[s];
-      if (!url || typeof THREE.GLTFLoader === 'undefined' || glbState[s]) return;
-      glbState[s] = 'loading';
+      var url = glbUrl(s);
+      if (!url || typeof THREE.GLTFLoader === 'undefined' || glbState[url]) return;
+      glbState[url] = 'loading';
       new THREE.GLTFLoader().load(url, function (gltf) {
-        glbCache[s] = fitModel(gltf.scene);
-        glbState[s] = 'done';
+        if (GLB_TINT[url]) {
+          gltf.scene.traverse(function (o) {
+            if (o.material && o.material.isMeshStandardMaterial && !o.material.map) {
+              o.material.color.set(GLB_TINT[url]);
+              o.material.roughness = 0.6;
+              o.material.metalness = 0.0;
+            }
+          });
+        }
+        glbCache[url] = fitModel(gltf.scene);
+        glbState[url] = 'done';
         if (cb) cb(s);
       }, undefined, function () {
-        glbState[s] = 'fail';
+        glbState[url] = 'fail';
         if (cb) cb(s);
       });
     }
 
     function setStatus(s) {
       if (!statusEl) return;
-      var st = glbState[s];
+      var st = glbState[glbUrl(s)];
       var msg = st === 'loading' ? '模型加载中…'
         : st === 'fail' ? '模型加载失败，用内置小人'
         : '';
@@ -964,12 +982,16 @@
     }
 
     function applyStage(s) {
+      var url = glbUrl(s);
       clearGroup();
-      if (glbState[s] === 'done') {
-        group.add(glbCache[s]);
+      if (glbState[url] === 'done') {
+        var w = new THREE.Group();
+        w.scale.setScalar(LEVEL_SCALE[s] || 1);
+        w.add(glbCache[url]);
+        group.add(w);
       } else {
         group.add(buildBody(s));
-        if (glbState[s] === undefined) {
+        if (glbState[url] === undefined) {
           loadGlb(s, function (s2) { if (stage === s2) applyStage(s2); });
         }
       }
