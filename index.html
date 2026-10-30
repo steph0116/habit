@@ -194,6 +194,36 @@
   .achievement .a-name { font-size: 11px; font-weight: 700; line-height: 1.25; }
   .achievement .a-desc { font-size: 10px; color: var(--muted); line-height: 1.3; }
 
+  /* ---------- 虚拟小人 ---------- */
+  .avatar-body { text-align: center; padding: 6px 0 2px; }
+  .avatar-canvas {
+    width: 240px; height: 260px;
+    margin: 0 auto; position: relative;
+    cursor: grab; touch-action: pan-y;
+  }
+  .avatar-canvas canvas { display: block; border-radius: 12px; }
+  .avatar-canvas.dragging { cursor: grabbing; }
+  .avatar-canvas .avatar-fallback { font-size: 12px; color: var(--muted); padding-top: 100px; }
+  .avatar-canvas .avatar-status {
+    position: absolute; top: 8px; right: 10px;
+    font-size: 11px; color: #fff; background: rgba(0,0,0,.45);
+    padding: 3px 8px; border-radius: 20px; pointer-events: none;
+  }
+  .avatar-rotate-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .avatar-stage { font-size: 19px; font-weight: 800; }
+  .avatar-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .avatar-hint { font-size: 12px; color: var(--muted); margin-top: 10px; }
+  .avatar-preview { margin-top: 14px; }
+  .avatar-preview .preview-title { font-size: 11px; color: var(--muted); display: block; margin-bottom: 6px; }
+  .avatar-preview .preview-btns { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .pbtn {
+    min-width: 30px; padding: 6px 8px; border-radius: 10px;
+    border: 1px solid var(--ring); background: transparent; color: var(--text);
+    font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .pbtn.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+  .pbtn-exit { color: var(--muted); }
+
   /* ---------- 底部 ---------- */
   footer { margin-top: 24px; text-align: center; color: rgba(255, 255, 255, .85); }
   .reset {
@@ -262,6 +292,29 @@
       </section>
 
       <section class="card">
+        <h2 class="section-title">💪 我的小人 <span class="sub" id="avatar-sub"></span></h2>
+        <div class="avatar-body">
+          <div class="avatar-canvas" id="avatar-canvas"></div>
+          <div class="avatar-rotate-hint">🖱️ 拖动旋转 · 看全身</div>
+          <div class="avatar-stage" id="avatar-stage"></div>
+          <div class="avatar-desc" id="avatar-desc"></div>
+          <div class="avatar-hint" id="avatar-hint"></div>
+          <div class="avatar-preview" id="avatar-preview">
+            <span class="preview-title">预览等级（临时）</span>
+            <div class="preview-btns">
+              <button class="pbtn" data-stage="0">0</button>
+              <button class="pbtn" data-stage="1">1</button>
+              <button class="pbtn" data-stage="2">2</button>
+              <button class="pbtn" data-stage="3">3</button>
+              <button class="pbtn" data-stage="4">4</button>
+              <button class="pbtn" data-stage="5">5</button>
+              <button class="pbtn pbtn-exit" data-exit="1">退出</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
         <h2 class="section-title">📷 拍照打卡 <span class="sub" id="photo-sub"></span></h2>
         <p class="photo-hint">定期拍一张正面或侧面照，记录身材变化。</p>
         <button class="photo-btn" id="photo-btn">📷 拍照 / 选择照片</button>
@@ -293,6 +346,8 @@
     </div>
   </div>
 
+<script src="./vendor/three.min.js"></script>
+<script src="./vendor/GLTFLoader.js"></script>
 <script>
 (function () {
   var STORAGE_KEY = 'zilv-daka-v1';
@@ -303,7 +358,8 @@
     { id: 'early-rise',    name: '早起', note: '08:00 前起床', icon: '🌅', color: '#f59e0b' },
     { id: 'mkt-portfolio', name: '做 mkt 作品集', note: '每天推进一点', icon: '🎨', color: '#8b5cf6' },
     { id: 'words',         name: '背单词', note: '背 30 个单词', icon: '🔤', color: '#3b82f6' },
-    { id: 'water',         name: '喝水', note: '喝 8 杯水', icon: '💧', color: '#06b6d4' }
+    { id: 'water',         name: '喝水', note: '喝 8 杯水', icon: '💧', color: '#06b6d4' },
+    { id: 'skincare',      name: '护肤', note: '洁面 / 水 / 精华 / 防晒', icon: '🧴', color: '#ec4899' }
   ];
 
   // 健身部位（顺序即点击切换的顺序）
@@ -341,6 +397,16 @@
     { id: 'disc-90',  type: 'discipline', target: 90,  icon: '🎖️', name: '自律达人', desc: '自律坚持 90 天' },
     { id: 'disc-180', type: 'discipline', target: 180, icon: '💎', name: '自律半年', desc: '自律坚持 180 天' },
     { id: 'disc-365', type: 'discipline', target: 365, icon: '🐉', name: '自律一周年', desc: '自律坚持 365 天' }
+  ];
+
+  // 虚拟小人阶段：自律天数 + 健身天数共同决定（取两者较低等级；健身门槛按「一周 5 练」估算）
+  var AVATAR_STAGES = [
+    { days: 0,  work: 0,  name: '初始',     desc: '刚开始，身材还很普通' },
+    { days: 7,  work: 5,  name: '小有变化', desc: '身体开始有反应了' },
+    { days: 14, work: 10, name: '初见线条', desc: '线条慢慢出来了' },
+    { days: 30, work: 20, name: '有型',     desc: '开始有肌肉感' },
+    { days: 60, work: 40, name: '强壮',     desc: '明显更结实了' },
+    { days: 90, work: 60, name: '健美',     desc: '理想身材达成' }
   ];
 
   var data = load();
@@ -430,7 +496,7 @@
   })();
 
   function load() {
-    var d = { checkins: {}, achievements: {}, workouts: {}, plan: defaultPlan(), disciplineStart: null };
+    var d = { checkins: {}, achievements: {}, workouts: {}, avatarStage: 0, plan: defaultPlan(), disciplineStart: null };
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -440,6 +506,7 @@
     } catch (e) {}
     if (!d.plan || typeof d.plan !== 'object') d.plan = defaultPlan();
     if (!d.workouts) d.workouts = {};
+    if (d.avatarStage == null) d.avatarStage = 0;
     return d;
   }
 
@@ -553,6 +620,7 @@
     else data.workouts[d] = true;
     save();
     renderFitness();
+    renderAvatar();
   }
 
   function cyclePlan(dayKey) {
@@ -594,6 +662,7 @@
     renderHabits();
     renderDiscipline();
     renderFitness();
+    renderAvatar();
     renderAchievements();
     renderPhotos();
   }
@@ -646,13 +715,16 @@
     data.disciplineStart = todayStr();
     save();
     renderDiscipline();
+    renderAvatar();
   }
 
   function resetDiscipline() {
-    if (confirm('确定要重新开始吗？将从今天重新计为第 1 天。')) {
+    if (confirm('确定要重新开始吗？将从今天重新计为第 1 天，小人会降一级。')) {
       data.disciplineStart = todayStr();
+      data.avatarStage = Math.max(0, (data.avatarStage == null ? 0 : data.avatarStage) - 1);
       save();
       renderDiscipline();
+      renderAvatar();
     }
   }
 
@@ -697,6 +769,317 @@
     var btn = document.getElementById('workout-btn');
     btn.textContent = workoutDone ? '✓ 已完成今日训练' : '完成今日训练';
     btn.className = 'workout-btn' + (workoutDone ? ' done' : '');
+  }
+
+  // ---------- 虚拟小人 ----------
+  function stageIndexFor(value, key) {
+    var idx = 0;
+    for (var i = 0; i < AVATAR_STAGES.length; i++) {
+      if (value >= AVATAR_STAGES[i][key]) idx = i;
+    }
+    return idx;
+  }
+
+  function avatarProgress() {
+    var discDays = disciplineDays();
+    var workouts = Object.keys(data.workouts).length;
+    var discIdx = stageIndexFor(discDays, 'days');
+    var workIdx = stageIndexFor(workouts, 'work');
+    var natural = Math.min(discIdx, workIdx);
+    // 只升不降：升级自动发生；降级只由「破戒归零」按钮触发（降一级）
+    if (data.avatarStage == null) data.avatarStage = 0;
+    if (natural > data.avatarStage) { data.avatarStage = natural; save(); }
+    var stage = data.avatarStage;
+    var next = stage + 1 < AVATAR_STAGES.length ? AVATAR_STAGES[stage + 1] : null;
+    return { discDays: discDays, workouts: workouts, stage: stage, next: next };
+  }
+
+  // ---------- 3D 小人（GLB 人体模型优先，程序化小人为兜底） ----------
+  // 每个等级一个 GLB 文件（0=最瘦 → 5=最壮），放在 index.html 同目录。
+  // 文件缺失或加载失败时，会自动退回内置的程序化小人。
+  var AVATAR_GLB = [
+    'avatar-0.glb',
+    'avatar-1.glb',
+    'avatar-2.glb',
+    'avatar-3.glb',
+    'avatar-4.glb',
+    'avatar-5.glb'
+  ];
+  var GLB_HEIGHT = 1.72; // 归一化后的模型高度，与内置小人一致
+
+  var avatar3d = (function () {
+    var renderer, scene, camera, group, statusEl;
+    var angleY = 0.6, angleX = -0.12;
+    var stage = 0;
+    var glbState = {}; // stage -> 'loading' | 'done' | 'fail'
+    var glbCache = {}; // stage -> THREE.Group（归一化后复用，不 dispose）
+
+    function skinMat(color) {
+      return new THREE.MeshStandardMaterial({ color: color, roughness: 0.55, metalness: 0.03 });
+    }
+
+    function buildBody(t) {
+      var g = new THREE.Group();
+      var skin = skinMat(0xf2b98a);
+      var muscle = skinMat(0xcf8a52);
+
+      var shoulderHalf = 0.20 + t * 0.024;
+      var waistHalf = shoulderHalf * 0.60;
+      var armR = 0.045 + t * 0.011;
+      var legR = 0.055 + t * 0.009;
+
+      // 躯干 y 范围：0.92(腰) ~ 1.44(肩)，取任意高度处躯干前/后表面半径
+      function surfZ(y) {
+        var frac = Math.max(0, Math.min(1, (y - 0.92) / 0.52));
+        return waistHalf + frac * (shoulderHalf - waistHalf);
+      }
+
+      // 头 + 脖子
+      var head = new THREE.Mesh(new THREE.SphereGeometry(0.15, 24, 18), skin);
+      head.position.set(0, 1.66, 0);
+      g.add(head);
+      var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.14, 12), skin);
+      neck.position.set(0, 1.49, 0);
+      g.add(neck);
+      // 躯干（倒梯形）
+      var torso = new THREE.Mesh(new THREE.CylinderGeometry(shoulderHalf, waistHalf, 0.52, 32), skin);
+      torso.position.set(0, 1.18, 0);
+      g.add(torso);
+
+      // 手臂 + 腿
+      for (var s = -1; s <= 1; s += 2) {
+        var arm = new THREE.Mesh(new THREE.CapsuleGeometry(armR, 0.70, 6, 16), skin);
+        arm.position.set(s * (shoulderHalf + armR * 0.3), 1.03, 0);
+        arm.rotation.z = s * 0.12;
+        g.add(arm);
+        var leg = new THREE.Mesh(new THREE.CapsuleGeometry(legR, 0.74, 6, 16), skin);
+        leg.position.set(s * 0.11, 0.52, 0);
+        g.add(leg);
+      }
+
+      if (t >= 1) {
+        // 三角肌（肩）
+        var deltR = 0.05 + t * 0.009;
+        for (var d = -1; d <= 1; d += 2) {
+          var delt = new THREE.Mesh(new THREE.SphereGeometry(deltR, 16, 12), skin);
+          delt.position.set(d * shoulderHalf, 1.40, 0);
+          g.add(delt);
+        }
+        // 胸肌
+        var chestR = 0.05 + t * 0.013;
+        for (var c2 = -1; c2 <= 1; c2 += 2) {
+          var chest = new THREE.Mesh(new THREE.SphereGeometry(chestR, 16, 12), skin);
+          chest.position.set(c2 * shoulderHalf * 0.45, 1.30, surfZ(1.30) + 0.03);
+          chest.scale.set(1, 1, 0.5);
+          g.add(chest);
+        }
+      }
+
+      if (t >= 2) {
+        // 腹肌（6 块）
+        for (var r = 0; r < 3; r++) {
+          var ay = 1.24 - r * 0.10;
+          for (var c3 = -1; c3 <= 1; c3 += 2) {
+            var ab = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.05, 0.03), muscle);
+            ab.position.set(c3 * 0.045, ay, surfZ(ay) + 0.015);
+            g.add(ab);
+          }
+        }
+        // 背阔肌（背部倒 V 鼓起）
+        var latR = 0.07 + t * 0.01;
+        for (var l = -1; l <= 1; l += 2) {
+          var lat = new THREE.Mesh(new THREE.SphereGeometry(latR, 16, 12), skin);
+          lat.position.set(l * shoulderHalf * 0.55, 1.06, -(surfZ(1.06) + 0.02));
+          lat.scale.set(1, 1, 0.5);
+          g.add(lat);
+        }
+      }
+
+      return g;
+    }
+
+    function render() {
+      if (!renderer || !group) return;
+      group.rotation.y = angleY;
+      group.rotation.x = angleX;
+      renderer.render(scene, camera);
+    }
+
+    function disposeObj(obj) {
+      obj.traverse(function (o) {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach(function (m) { m.dispose(); });
+          else o.material.dispose();
+        }
+      });
+    }
+
+    function clearGroup() {
+      while (group.children.length) {
+        var child = group.children[0];
+        group.remove(child);
+        if (!child.userData || !child.userData.cached) disposeObj(child);
+      }
+    }
+
+    // 归一化 GLB：居中 + 缩放，让脚落到 y=0、高度 = GLB_HEIGHT；标记为复用，不被 dispose。
+    function fitModel(root) {
+      var box = new THREE.Box3().setFromObject(root);
+      var size = box.getSize(new THREE.Vector3());
+      var center = box.getCenter(new THREE.Vector3());
+      if (size.y <= 0.0001) return root;
+      var scale = GLB_HEIGHT / size.y;
+      var wrap = new THREE.Group();
+      wrap.userData.cached = true;
+      root.position.set(-center.x, -center.y, -center.z);
+      wrap.add(root);
+      wrap.scale.setScalar(scale);
+      wrap.position.y = -(box.min.y - center.y) * scale;
+      return wrap;
+    }
+
+    function loadGlb(s, cb) {
+      var url = AVATAR_GLB[s];
+      if (!url || typeof THREE.GLTFLoader === 'undefined' || glbState[s]) return;
+      glbState[s] = 'loading';
+      new THREE.GLTFLoader().load(url, function (gltf) {
+        glbCache[s] = fitModel(gltf.scene);
+        glbState[s] = 'done';
+        if (cb) cb(s);
+      }, undefined, function () {
+        glbState[s] = 'fail';
+        if (cb) cb(s);
+      });
+    }
+
+    function setStatus(s) {
+      if (!statusEl) return;
+      var st = glbState[s];
+      var msg = st === 'loading' ? '模型加载中…'
+        : st === 'fail' ? '模型加载失败，用内置小人'
+        : '';
+      statusEl.textContent = msg;
+      statusEl.style.display = msg ? 'block' : 'none';
+    }
+
+    function applyStage(s) {
+      clearGroup();
+      if (glbState[s] === 'done') {
+        group.add(glbCache[s]);
+      } else {
+        group.add(buildBody(s));
+        if (glbState[s] === undefined) {
+          loadGlb(s, function (s2) { if (stage === s2) applyStage(s2); });
+        }
+      }
+      setStatus(s);
+      render();
+    }
+
+    function init() {
+      var container = document.getElementById('avatar-canvas');
+      if (!container) return;
+      if (typeof THREE === 'undefined') {
+        container.innerHTML = '<div class="avatar-fallback">3D 小人需要联网加载，请联网后刷新</div>';
+        return;
+      }
+      if (renderer) return;
+
+      var w = container.clientWidth || 240;
+      var h = container.clientHeight || 260;
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(w, h);
+      renderer.setClearColor(0x000000, 0);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+      container.appendChild(renderer.domElement);
+
+      statusEl = document.createElement('div');
+      statusEl.className = 'avatar-status';
+      statusEl.style.display = 'none';
+      container.appendChild(statusEl);
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(30, w / h, 0.1, 100);
+      camera.position.set(0, 1.15, 4.2);
+      camera.lookAt(0, 1.0, 0);
+
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x9a8a7a, 1.05));
+      var key = new THREE.DirectionalLight(0xffffff, 1.7);
+      key.position.set(2.5, 3, 3);
+      scene.add(key);
+      var rim = new THREE.DirectionalLight(0xffffff, 0.8);
+      rim.position.set(-2, 1.5, -2.5);
+      scene.add(rim);
+
+      group = new THREE.Group();
+      group.rotation.set(angleX, angleY, 0);
+      scene.add(group);
+
+      var dragging = false, lastX = 0, lastY = 0;
+      renderer.domElement.addEventListener('pointerdown', function (e) {
+        dragging = true; lastX = e.clientX; lastY = e.clientY;
+        container.classList.add('dragging');
+        if (renderer.domElement.setPointerCapture) renderer.domElement.setPointerCapture(e.pointerId);
+      });
+      renderer.domElement.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        angleY += (e.clientX - lastX) * 0.012;
+        angleX += (e.clientY - lastY) * 0.008;
+        angleX = Math.max(-0.5, Math.min(0.5, angleX));
+        lastX = e.clientX; lastY = e.clientY;
+        render();
+      });
+      renderer.domElement.addEventListener('pointerup', function () { dragging = false; container.classList.remove('dragging'); });
+      renderer.domElement.addEventListener('pointercancel', function () { dragging = false; container.classList.remove('dragging'); });
+
+      setStage(stage);
+      render();
+    }
+
+    function setStage(s) {
+      stage = s;
+      if (!group) return;
+      applyStage(s);
+    }
+
+    return { init: init, setStage: setStage };
+  })();
+
+  // 预览等级（null = 显示真实等级；0~5 = 预览对应阶段）
+  var previewStage = null;
+
+  function renderAvatar() {
+    var p = avatarProgress();
+    var realStage = p.stage;
+    var showStage = previewStage !== null ? previewStage : realStage;
+    var s = AVATAR_STAGES[showStage];
+    var name = s.name + (showStage === AVATAR_STAGES.length - 1 ? ' 🏆' : '');
+    document.getElementById('avatar-sub').textContent = '自律 ' + p.discDays + ' 天 · 健身 ' + p.workouts + ' 次';
+    avatar3d.init();
+    avatar3d.setStage(showStage);
+    document.getElementById('avatar-stage').textContent = name;
+    document.getElementById('avatar-desc').textContent = s.desc;
+    if (previewStage !== null) {
+      document.getElementById('avatar-hint').textContent = '预览中 · 等级 ' + showStage + ' / ' + (AVATAR_STAGES.length - 1);
+    } else if (p.next) {
+      var needDisc = Math.max(0, p.next.days - p.discDays);
+      var needWork = Math.max(0, p.next.work - p.workouts);
+      document.getElementById('avatar-hint').textContent =
+        '下一阶段「' + p.next.name + '」：自律还差 ' + needDisc + ' 天 · 健身还差 ' + needWork + ' 次';
+    } else {
+      document.getElementById('avatar-hint').textContent = '已达最高阶段，继续保持！';
+    }
+    // 高亮当前预览按钮
+    var pbtns = document.querySelectorAll('#avatar-preview [data-stage]');
+    for (var i = 0; i < pbtns.length; i++) {
+      pbtns[i].classList.toggle('active',
+        previewStage !== null && parseInt(pbtns[i].getAttribute('data-stage'), 10) === previewStage);
+    }
   }
 
   function renderPhotos() {
@@ -820,6 +1203,12 @@
 
   document.getElementById('workout-btn').addEventListener('click', toggleWorkout);
 
+  document.getElementById('avatar-preview').addEventListener('click', function (e) {
+    if (e.target.closest('[data-exit]')) { previewStage = null; renderAvatar(); return; }
+    var btn = e.target.closest('[data-stage]');
+    if (btn) { previewStage = parseInt(btn.getAttribute('data-stage'), 10); renderAvatar(); }
+  });
+
   document.getElementById('photo-btn').addEventListener('click', function () {
     document.getElementById('photo-input').click();
   });
@@ -851,8 +1240,8 @@
   });
 
   document.getElementById('reset').addEventListener('click', function () {
-    if (confirm('确定要清空所有打卡记录、健身计划和照片吗？此操作不可恢复。')) {
-      data = { checkins: {}, achievements: {}, workouts: {}, plan: defaultPlan() };
+    if (confirm('确定要清空所有打卡记录、健身记录和照片吗？此操作不可恢复。')) {
+      data = { checkins: {}, achievements: {}, workouts: {}, avatarStage: 0, plan: defaultPlan() };
       save();
       photoStore.clear().then(function () { render(); });
     }

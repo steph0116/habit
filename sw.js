@@ -1,5 +1,5 @@
-var CACHE = 'zilv-daka-v1';
-var ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
+var CACHE = 'zilv-daka-v2';
+var ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './vendor/three.min.js', './vendor/GLTFLoader.js'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
