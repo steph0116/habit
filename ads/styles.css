@@ -38,6 +38,7 @@ h1 em { color: var(--lime); font-style: normal; }
 .btn-ghost { border-color: #3a5046; color: var(--white); background: transparent; }
 .btn-ghost:hover { background: #16281f; }
 .hero-note { margin-top: 14px; color: #7f9388; font-size: 10px; }
+.invite-note { color: var(--lime); font-weight: 800; }
 .phone { position: relative; width: min(330px, 100%); margin: 0 auto; padding: 10px; border: 1px solid #365046; border-radius: 34px; background: #16281f; box-shadow: 0 30px 70px rgba(0,0,0,.35); }
 .phone::before { content: ""; position: absolute; top: 10px; left: 50%; width: 80px; height: 5px; border-radius: 99px; background: #365046; transform: translateX(-50%); }
 .phone img { display: block; width: 100%; height: 530px; object-fit: cover; object-position: top; border-radius: 25px; }
