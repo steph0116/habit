@@ -9,16 +9,6 @@
     if (Object.keys(utm).length) localStorage.setItem("habit_utm", JSON.stringify(utm));
   } catch (e) {}
 
-  var inviteCodes = { hook_a: "META-A", hook_b: "META-B", hook_c: "META-C" };
-  var inviteCode = inviteCodes[utm.utm_content] || "";
-  if (inviteCode) {
-    var note = document.getElementById("invite-note");
-    if (note) {
-      note.textContent = "安装后输入邀请码 " + inviteCode;
-      note.style.display = "block";
-    }
-  }
-
   var endpoint = config.trackingEndpoint;
   if (endpoint === undefined) {
     endpoint = /(^|\.)github\.io$/.test(location.hostname) ? "" : "/api/landing/event";
