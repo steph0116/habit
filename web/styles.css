@@ -50,6 +50,7 @@ section { padding: 70px 0; }
 h2 { margin: 10px 0 11px; font-size: clamp(28px, 4vw, 42px); line-height: 1.12; letter-spacing: -.045em; }
 .lead { max-width: 680px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 28px; }
+.cards.two { grid-template-columns: 1fr 1fr; }
 .card { padding: 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--white); }
 .card.dark { background: var(--dark); border-color: var(--dark); color: var(--white); }
 .card .num { color: var(--forest); font-size: 11px; font-weight: 900; letter-spacing: .1em; }
@@ -81,6 +82,7 @@ footer { padding: 24px 0 96px; color: var(--muted); font-size: 10px; line-height
   .phone { width: min(300px, 100%); }
   .phone img { height: 460px; }
   .cards { grid-template-columns: 1fr; }
+  .cards.two { grid-template-columns: 1fr; }
   .faq { grid-template-columns: 1fr; }
   .sticky { display: block; }
   section { padding: 52px 0; }

@@ -80,4 +80,9 @@
       }
     });
   });
+  document.querySelectorAll("[data-app-download]").forEach(function (link) {
+    link.addEventListener("click", function () {
+      send("app_download_click", link.getAttribute("data-app-download"));
+    });
+  });
 })();
