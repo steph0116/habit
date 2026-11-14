@@ -251,6 +251,96 @@
   .lightbox-info { display: flex; align-items: center; gap: 14px; color: #fff; }
   .lightbox-del { background: #ef4444; color: #fff; border: none; border-radius: 999px; padding: 8px 16px; cursor: pointer; font-size: 13px; }
   .lightbox-x { position: absolute; top: -42px; right: 0; background: rgba(255, 255, 255, .2); color: #fff; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; }
+  /* ---------- V2: focus, weekly review, onboarding ---------- */
+  .focus-card {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+    margin-top: 16px; padding: 20px; border-radius: 20px; color: #fff;
+    background: linear-gradient(135deg, #111827 0%, #312e81 100%);
+    box-shadow: 0 10px 30px rgba(17, 24, 39, .22);
+  }
+  .focus-kicker { font-size: 10px; font-weight: 800; letter-spacing: .14em; color: #c7d2fe; }
+  .focus-card h2 { margin: 6px 0 6px; font-size: 23px; letter-spacing: -.03em; }
+  .focus-card p { margin: 0; color: #cbd5e1; font-size: 12px; line-height: 1.55; }
+  .focus-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+  .focus-chip { display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.16); border-radius: 999px; background: rgba(255,255,255,.08); color: #e5e7eb; font-size: 10px; }
+  .focus-edit { flex: 0 0 auto; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; background: transparent; color: #fff; padding: 8px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .focus-edit:hover { background: rgba(255,255,255,.1); }
+  .weekly-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .weekly-stat { padding: 13px; border-radius: 14px; background: #f8fafc; }
+  .weekly-stat .k { color: var(--muted); font-size: 10px; font-weight: 700; }
+  .weekly-stat .v { margin-top: 6px; font-size: 18px; font-weight: 800; line-height: 1.2; }
+  .weekly-stat .d { margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+  .weekly-empty { padding: 13px; border-radius: 12px; background: #f8fafc; color: var(--muted); font-size: 12px; line-height: 1.55; }
+  .achievement-toggle { display: block; width: 100%; margin-top: 12px; padding: 9px; border: 1px dashed var(--ring); border-radius: 10px; background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; }
+  .achievement-toggle:hover { border-color: #6366f1; color: #4f46e5; }
+  .footer-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .focus-modal { position: fixed; inset: 0; z-index: 1200; display: none; align-items: center; justify-content: center; padding: 18px; background: rgba(15, 23, 42, .62); backdrop-filter: blur(6px); }
+  .focus-modal.open { display: flex; }
+  .focus-sheet { position: relative; width: min(540px, 100%); max-height: 90vh; overflow: auto; padding: 24px; border-radius: 24px; background: #fff; box-shadow: 0 30px 80px rgba(15,23,42,.35); }
+  .focus-sheet h2 { margin: 6px 0 8px; font-size: 23px; letter-spacing: -.03em; }
+  .focus-sheet > p { margin: 0 0 16px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+  .focus-close { position: absolute; top: 12px; right: 14px; width: 30px; height: 30px; border: 1px solid var(--ring); border-radius: 50%; background: #fff; color: var(--text); font-size: 18px; cursor: pointer; }
+  .focus-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .focus-option { display: flex; align-items: center; gap: 9px; padding: 11px; border: 1px solid var(--ring); border-radius: 12px; background: #fff; cursor: pointer; }
+  .focus-option.selected { border-color: #6366f1; background: #eef2ff; }
+  .focus-option input { accent-color: #6366f1; }
+  .focus-option .o-icon { font-size: 19px; }
+  .focus-option .o-name { display: block; font-size: 11px; font-weight: 700; }
+  .focus-option .o-note { display: block; margin-top: 2px; color: var(--muted); font-size: 9px; }
+  .focus-actions { display: flex; gap: 8px; margin-top: 18px; }
+  .focus-actions button { flex: 1; border: 0; border-radius: 12px; padding: 12px; font-size: 12px; font-weight: 800; cursor: pointer; }
+  .focus-secondary { background: #f1f5f9; color: var(--text); }
+  .focus-primary { background: #6366f1; color: #fff; }
+  .reminder-card .section-title { margin-bottom: 8px; }
+  .reminder-copy { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.55; }
+  .reminder-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .reminder-row input[type="time"] { border: 1px solid var(--ring); border-radius: 10px; padding: 9px 11px; background: #fff; color: var(--text); font: inherit; }
+  .reminder-row button { border: 0; border-radius: 10px; padding: 9px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .reminder-save { background: #6366f1; color: #fff; }
+  .reminder-enable { background: #eef2ff; color: #4f46e5; }
+  .reminder-status { margin: 9px 0 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+  .repair-btn { display: inline-block; margin-left: 8px; border: 1px solid #c7d2fe; border-radius: 999px; background: #eef2ff; color: #4f46e5; padding: 3px 7px; font-size: 9px; font-weight: 700; cursor: pointer; }
+  .repair-btn:hover { background: #e0e7ff; }
+  .custom-form { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--ring); }
+  .custom-form-title { margin: 0 0 8px; font-size: 11px; font-weight: 800; color: var(--text); }
+  .custom-grid { display: grid; grid-template-columns: 54px 1fr 1fr; gap: 7px; }
+  .custom-grid input { width: 100%; border: 1px solid var(--ring); border-radius: 9px; padding: 8px; background: #fff; color: var(--text); font: inherit; font-size: 11px; }
+  .custom-grid input[type="color"] { padding: 4px; height: 34px; }
+  .custom-add { width: 100%; margin-top: 8px; border: 0; border-radius: 10px; padding: 9px; background: #f1f5f9; color: #4f46e5; font-size: 11px; font-weight: 800; cursor: pointer; }
+  .custom-add:hover { background: #e2e8f0; }
+  .option-delete { margin-left: auto; border: 0; background: transparent; color: #94a3b8; font-size: 16px; cursor: pointer; padding: 2px 4px; }
+  .option-delete:hover { color: #ef4444; }
+  .survey-modal { z-index: 1300; }
+  .survey-sheet { width: min(520px, 100%); }
+  .survey-options { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 520px) {
+    .focus-card { padding: 16px; }
+    .focus-card h2 { font-size: 20px; }
+    .weekly-grid { grid-template-columns: 1fr; }
+    .focus-options { grid-template-columns: 1fr; }
+    .survey-options { grid-template-columns: 1fr; }
+    .custom-grid { grid-template-columns: 44px 1fr 1fr; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .focus-sheet { background: #111827; color: var(--text); }
+    .focus-sheet h2 { color: var(--text); }
+    .focus-close { background: #1f2937; color: var(--text); }
+    .focus-option { background: #111827; }
+    .focus-option.selected { background: #312e81; border-color: #818cf8; }
+    .focus-option .o-name { color: var(--text); }
+    .focus-secondary { background: #374151; color: var(--text); }
+    .custom-form-title { color: var(--text); }
+    .custom-grid input { background: #111827; color: var(--text); }
+    .custom-grid input::placeholder { color: #6b7280; }
+    .custom-add { background: #312e81; color: #c7d2fe; }
+    .weekly-stat, .weekly-empty { background: #111827; color: var(--text); }
+    .weekly-stat .k, .weekly-stat .d { color: var(--muted); }
+    .weekly-stat .v { color: var(--text); }
+    .reminder-row input[type="time"] { background: #111827; color: var(--text); color-scheme: dark; }
+    .reminder-enable { background: #312e81; color: #c7d2fe; }
+    .repair-btn { background: #312e81; color: #c7d2fe; border-color: #4f46e5; }
+    .achievement-toggle:hover { color: #a5b4fc; }
+  }
 </style>
 </head>
 <body>
@@ -262,10 +352,38 @@
     </header>
 
     <main>
+      <section class="focus-card">
+        <div>
+          <div class="focus-kicker">TODAY'S FOCUS</div>
+          <h2>今天只做 <span id="focus-count">3</span> 件</h2>
+          <p id="focus-copy">先完成最重要的 3 件，而不是列 6 件。</p>
+          <div class="focus-chips" id="focus-chips"></div>
+        </div>
+        <button class="focus-edit" id="edit-focus" type="button">调整</button>
+      </section>
+
       <section class="card">
         <h2 class="section-title">今日习惯 <span class="sub" id="today-sub"></span></h2>
         <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
         <ul class="habit-list" id="habit-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">📈 本周复盘 <span class="sub">自动计算</span></h2>
+        <div id="weekly-grid"></div>
+      </section>
+
+      <section class="card reminder-card">
+        <h2 class="section-title">⏰ 每日提醒 <span class="sub" id="reminder-sub"></span></h2>
+        <p class="reminder-copy">设置时间并开启推送。服务端运行时会按你的时区提醒，页面关闭也能收。需要先启动 <code>server/server.mjs</code>。</p>
+        <div class="reminder-row">
+          <input type="time" id="reminder-time" aria-label="每日提醒时间">
+          <button class="reminder-save" id="save-reminder" type="button">保存提醒</button>
+          <button class="reminder-enable" id="enable-push" type="button">开启推送</button>
+          <button class="reminder-enable" id="test-push" type="button" style="display:none">测试推送</button>
+          <button class="reminder-enable" id="disable-push" type="button" style="display:none">关闭推送</button>
+        </div>
+        <p class="reminder-status" id="reminder-status">还没有设置提醒。</p>
       </section>
 
       <section class="card">
@@ -303,13 +421,67 @@
       <section class="card">
         <h2 class="section-title">成就墙 <span class="sub" id="achievement-sub"></span></h2>
         <div class="achievements" id="achievements"></div>
+        <button class="achievement-toggle" id="achievement-toggle" type="button">查看全部成就</button>
       </section>
     </main>
 
     <footer>
-      <button class="reset" id="reset">清空全部数据</button>
+      <div class="footer-actions">
+        <button class="reset" id="export-data">导出数据</button>
+        <button class="reset" id="import-data">导入数据</button>
+        <button class="reset" id="reset">清空全部数据</button>
+      </div>
+      <input type="file" id="import-file" accept="application/json,.json" style="display:none">
       <p class="tip">数据保存在本机浏览器中，换浏览器或清理缓存会丢失。</p>
     </footer>
+  </div>
+
+  <div class="focus-modal" id="focus-modal">
+    <div class="focus-sheet" role="dialog" aria-modal="true" aria-labelledby="focus-title">
+      <button class="focus-close" id="focus-close" type="button" aria-label="关闭">×</button>
+      <div class="focus-kicker" style="color:#6366f1">TODAY'S FOCUS</div>
+      <h2 id="focus-title">今天最重要的事，不超过 3 件</h2>
+      <p>选 1–3 个习惯。完成少而重要的事，比列一张长清单更容易坚持。</p>
+      <div class="focus-options" id="focus-options"></div>
+      <div class="custom-form">
+        <p class="custom-form-title">添加自己的习惯</p>
+        <div class="custom-grid">
+          <input type="text" id="custom-icon" value="✅" maxlength="2" aria-label="习惯图标">
+          <input type="text" id="custom-name" placeholder="习惯名称" maxlength="12" aria-label="习惯名称">
+          <input type="text" id="custom-note" placeholder="一句说明（可选）" maxlength="24" aria-label="习惯说明">
+        </div>
+        <div class="reminder-row" style="margin-top:7px">
+          <input type="color" id="custom-color" value="#6366f1" aria-label="习惯颜色" style="width:44px;height:34px;padding:3px;border:1px solid var(--ring);border-radius:9px;background:#fff">
+          <button class="custom-add" id="add-custom-habit" type="button">＋ 添加习惯</button>
+        </div>
+      </div>
+      <div class="focus-actions">
+        <button class="focus-secondary" id="focus-cancel" type="button">稍后</button>
+        <button class="focus-primary" id="focus-save" type="button">开始今天</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="focus-modal survey-modal" id="survey-modal">
+    <div class="focus-sheet survey-sheet" role="dialog" aria-modal="true" aria-labelledby="survey-title">
+      <button class="focus-close" id="survey-close" type="button" aria-label="关闭">×</button>
+      <div class="focus-kicker" style="color:#6366f1">ONE QUESTION</div>
+      <h2 id="survey-title">你是在哪里找到我们的？</h2>
+      <div class="focus-options survey-options" id="survey-options">
+        <label class="focus-option"><input type="radio" name="survey-source" value="xiaohongshu"><span class="o-icon">📕</span><span><span class="o-name">小红书</span><span class="o-note">笔记或搜索</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="douyin"><span class="o-icon">🎵</span><span><span class="o-name">抖音</span><span class="o-note">视频或直播</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="facebook"><span class="o-icon">📘</span><span><span class="o-name">Facebook</span><span class="o-note">信息流广告</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="instagram"><span class="o-icon">📸</span><span><span class="o-name">Instagram</span><span class="o-note">信息流广告</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="google"><span class="o-icon">🔍</span><span><span class="o-name">Google 搜索 / 广告</span><span class="o-note">自己搜到或看到广告</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="friend"><span class="o-icon">💬</span><span><span class="o-name">朋友 / 群聊</span><span class="o-note">别人推荐</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="search"><span class="o-icon">🔎</span><span><span class="o-name">应用商店 / 搜索</span><span class="o-note">自己找到</span></span></label>
+        <label class="focus-option"><input type="radio" name="survey-source" value="other"><span class="o-icon">✨</span><span><span class="o-name">其他</span><span class="o-note">不在上面</span></span></label>
+      </div>
+      <div class="focus-actions">
+        <button class="focus-secondary" id="survey-skip" type="button">跳过</button>
+        <button class="focus-primary" id="survey-submit" type="button">继续</button>
+      </div>
+    </div>
   </div>
 
   <div class="lightbox" id="lightbox">
@@ -329,6 +501,23 @@
 <script>
 (function () {
   var STORAGE_KEY = 'zilv-daka-v1';
+  var DEFAULT_FOCUS = ['early-sleep', 'mkt-portfolio', 'water'];
+  var showAllAchievements = false;
+  var EVENT_LIMIT = 200;
+  var PUSH_API = '/api/push';
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function safeColor(value) {
+    return /^#[0-9a-f]{6}$/i.test(value || '') ? value : '#6366f1';
+  }
 
   // 在这里增删你的习惯（图标、颜色、说明都可以自己改）
   var HABITS = [
@@ -339,6 +528,16 @@
     { id: 'water',         name: '喝水', note: '喝 8 杯水', icon: '💧', color: '#06b6d4' },
     { id: 'skincare',      name: '护肤', note: '洁面 / 水 / 精华 / 防晒', icon: '🧴', color: '#ec4899' }
   ];
+
+  function allHabits() {
+    return HABITS.concat(Array.isArray(data.customHabits) ? data.customHabits : []);
+  }
+
+  function focusHabits() {
+    var ids = Array.isArray(data.focusHabits) && data.focusHabits.length ? data.focusHabits : DEFAULT_FOCUS;
+    var list = allHabits().filter(function (h) { return ids.indexOf(h.id) !== -1; });
+    return list.length ? list : HABITS.slice(0, 3);
+  }
 
   // 健身部位（顺序即点击切换的顺序）
   var MUSCLES = [
@@ -474,10 +673,12 @@
   })();
 
   function load() {
-    var d = { checkins: {}, achievements: {}, workouts: {}, avatarStage: 0, plan: defaultPlan(), disciplineStart: null };
+    var d = { checkins: {}, achievements: {}, workouts: {}, avatarStage: 0, plan: defaultPlan(), disciplineStart: null, focusHabits: DEFAULT_FOCUS.slice(), customHabits: [], reminderTime: '', repairWeeks: {}, events: [], pushEnabled: false, onboarded: false, installSurvey: null };
+    var hadSaved = false;
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
+        hadSaved = true;
         var p = JSON.parse(raw);
         for (var k in p) if (p.hasOwnProperty(k)) d[k] = p[k];
       }
@@ -485,11 +686,39 @@
     if (!d.plan || typeof d.plan !== 'object') d.plan = defaultPlan();
     if (!d.workouts) d.workouts = {};
     if (d.avatarStage == null) d.avatarStage = 0;
+    if (!Array.isArray(d.focusHabits) || d.focusHabits.length === 0) d.focusHabits = DEFAULT_FOCUS.slice();
+    if (!Array.isArray(d.customHabits)) d.customHabits = [];
+    if (typeof d.reminderTime !== 'string') d.reminderTime = '';
+    if (!d.repairWeeks || typeof d.repairWeeks !== 'object') d.repairWeeks = {};
+    if (!Array.isArray(d.events)) d.events = [];
+    if (typeof d.pushEnabled !== 'boolean') d.pushEnabled = false;
+    if (typeof d.onboarded !== 'boolean') d.onboarded = hadSaved;
+    if (!d.installSurvey || typeof d.installSurvey !== 'object' || typeof d.installSurvey.source !== 'string') d.installSurvey = null;
     return d;
   }
 
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function logEvent(type, meta) {
+    if (!data.events) data.events = [];
+    data.events.push({ type: type, ts: new Date().toISOString(), meta: meta || {} });
+    if (data.events.length > EVENT_LIMIT) data.events = data.events.slice(-EVENT_LIMIT);
+    save();
+  }
+
+  function currentWeekKey() {
+    var now = new Date();
+    var monday = new Date(now);
+    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    return fmt(monday);
+  }
+
+  function yesterdayStr() {
+    var d = new Date();
+    d.setDate(d.getDate() - 1);
+    return fmt(d);
   }
 
   function fmt(d) {
@@ -540,14 +769,14 @@
 
   function bestStreakAny() {
     var best = 0;
-    HABITS.forEach(function (h) { best = Math.max(best, bestStreak(h.id)); });
+    allHabits().forEach(function (h) { best = Math.max(best, bestStreak(h.id)); });
     return best;
   }
 
   function totalCount() {
     // 只统计当前存在的习惯，避免已删除/改名的习惯残留历史影响累计数
     var known = {};
-    HABITS.forEach(function (h) { known[h.id] = true; });
+    allHabits().forEach(function (h) { known[h.id] = true; });
     var sum = 0;
     for (var date in data.checkins) {
       var ids = data.checkins[date];
@@ -556,9 +785,17 @@
     return sum;
   }
 
-  function isCheckedToday(habitId) {
-    var list = data.checkins[todayStr()];
+  function isCheckedOn(habitId, date) {
+    var list = data.checkins[date];
     return list ? list.indexOf(habitId) !== -1 : false;
+  }
+
+  function isCheckedToday(habitId) {
+    return isCheckedOn(habitId, todayStr());
+  }
+
+  function canRepairThisWeek() {
+    return !data.repairWeeks[currentWeekKey()];
   }
 
   function muscleById(id) {
@@ -582,14 +819,35 @@
   function toggle(habitId) {
     var d = todayStr();
     var list = data.checkins[d] ? data.checkins[d].slice() : [];
+    var wasChecked = list.indexOf(habitId) !== -1;
     if (list.indexOf(habitId) !== -1) {
       data.checkins[d] = list.filter(function (id) { return id !== habitId; });
       if (data.checkins[d].length === 0) delete data.checkins[d];
     } else {
       data.checkins[d] = list.concat(habitId);
     }
-    save();
+    logEvent(wasChecked ? 'habit_unchecked' : 'habit_checked', { habitId: habitId });
     render();
+  }
+
+  function repairYesterday(habitId) {
+    if (!canRepairThisWeek()) {
+      toast('本周补签已用完，下周再来');
+      return;
+    }
+    var y = yesterdayStr();
+    if (isCheckedOn(habitId, y)) {
+      toast('昨天已经打过卡了');
+      return;
+    }
+    var habit = allHabits().filter(function (h) { return h.id === habitId; })[0];
+    if (!habit) return;
+    var list = data.checkins[y] ? data.checkins[y].slice() : [];
+    data.checkins[y] = list.concat(habitId);
+    data.repairWeeks[currentWeekKey()] = true;
+    logEvent('repair_used', { habitId: habitId, date: y });
+    render();
+    toast('已补签昨天，连续记录保住了');
   }
 
   function toggleWorkout() {
@@ -637,7 +895,10 @@
     checkAchievements();
     renderDate();
     renderStats();
+    renderFocus();
     renderHabits();
+    renderWeekly();
+    renderReminder();
     renderDiscipline();
     renderFitness();
     renderAvatar();
@@ -651,9 +912,10 @@
   }
 
   function renderStats() {
-    var done = HABITS.filter(isCheckedToday).length;
+    var focus = focusHabits();
+    var done = focus.filter(function (h) { return isCheckedToday(h.id); }).length;
     document.getElementById('stats').innerHTML =
-      statTile(done + '/' + HABITS.length, '今日完成') +
+      statTile(done + '/' + focus.length, '今日完成') +
       statTile(totalCount(), '累计打卡') +
       statTile(bestStreakAny(), '最长连续(天)');
   }
@@ -663,25 +925,372 @@
   }
 
   function renderHabits() {
-    var done = HABITS.filter(isCheckedToday).length;
-    document.getElementById('today-sub').textContent = done + ' / ' + HABITS.length;
-    document.getElementById('progress-fill').style.width = (done / HABITS.length * 100) + '%';
+    var focus = focusHabits();
+    var done = focus.filter(function (h) { return isCheckedToday(h.id); }).length;
+    document.getElementById('today-sub').textContent = done + ' / ' + focus.length;
+    document.getElementById('progress-fill').style.width = (focus.length ? done / focus.length * 100 : 0) + '%';
 
-    document.getElementById('habit-list').innerHTML = HABITS.map(function (h) {
+    document.getElementById('habit-list').innerHTML = focus.map(function (h) {
       var checked = isCheckedToday(h.id);
       var streak = currentStreak(h.id);
+      var repair = (!checked && checkedDates(h.id).length > 0 && !isCheckedOn(h.id, yesterdayStr()) && canRepairThisWeek())
+        ? '<button class="repair-btn" data-repair="' + escapeHtml(h.id) + '" type="button">补签昨天</button>'
+        : '';
       return '<li class="habit">' +
-        '<div class="icon" style="background:' + h.color + '22">' + h.icon + '</div>' +
+        '<div class="icon" style="background:' + safeColor(h.color) + '22">' + escapeHtml(h.icon) + '</div>' +
         '<div class="info">' +
-          '<div class="name">' + h.name + '</div>' +
-          '<div class="note">' + h.note + '</div>' +
-          '<div class="streak">🔥 连续 ' + streak + ' 天</div>' +
+          '<div class="name">' + escapeHtml(h.name) + '</div>' +
+          '<div class="note">' + escapeHtml(h.note) + '</div>' +
+          '<div class="streak">🔥 连续 ' + streak + ' 天' + repair + '</div>' +
         '</div>' +
-        '<button class="check' + (checked ? ' done' : '') + '" data-habit="' + h.id + '" aria-label="打卡 ' + h.name + '">' +
+        '<button class="check' + (checked ? ' done' : '') + '" data-habit="' + escapeHtml(h.id) + '" aria-label="打卡 ' + escapeHtml(h.name) + '">' +
           (checked ? '✓' : '') +
         '</button>' +
       '</li>';
     }).join('');
+  }
+
+  function renderFocus() {
+    var focus = focusHabits();
+    document.getElementById('focus-count').textContent = focus.length;
+    document.getElementById('focus-copy').textContent =
+      focus.length >= 3
+        ? '先完成最重要的 3 件，而不是列 6 件。'
+        : '今天只保留 ' + focus.length + ' 件最重要的事。';
+    document.getElementById('focus-chips').innerHTML = focus.map(function (h) {
+      return '<span class="focus-chip">' + escapeHtml(h.icon) + ' ' + escapeHtml(h.name) + '</span>';
+    }).join('');
+  }
+
+  function recentDates(count) {
+    var arr = [];
+    var now = new Date();
+    for (var i = count - 1; i >= 0; i--) {
+      var d = new Date(now);
+      d.setDate(now.getDate() - i);
+      arr.push(fmt(d));
+    }
+    return arr;
+  }
+
+  function renderWeekly() {
+    var focus = focusHabits();
+    var dates = recentDates(7);
+    var counts = focus.map(function (h) {
+      var n = 0;
+      dates.forEach(function (date) {
+        var list = data.checkins[date] || [];
+        if (list.indexOf(h.id) !== -1) n++;
+      });
+      return { habit: h, count: n };
+    });
+    var done = counts.reduce(function (sum, x) { return sum + x.count; }, 0);
+    var possible = focus.length * 7;
+    var rate = possible ? Math.round(done / possible * 100) : 0;
+    var best = counts.slice().sort(function (a, b) { return b.count - a.count; })[0];
+    var worst = counts.slice().sort(function (a, b) { return a.count - b.count; })[0];
+    var grid = document.getElementById('weekly-grid');
+    if (!done) {
+      grid.innerHTML = '<div class="weekly-empty">本周还没有打卡记录。先完成今天的一个习惯，这里会自动出现你的完成率和最稳定习惯。</div>';
+      return;
+    }
+    grid.innerHTML =
+      '<div class="weekly-stat"><div class="k">本周完成</div><div class="v">' + done + '/' + possible + '</div><div class="d">完成率 ' + rate + '%</div></div>' +
+      '<div class="weekly-stat"><div class="k">最稳定</div><div class="v">' + escapeHtml(best.habit.icon) + ' ' + escapeHtml(best.habit.name) + '</div><div class="d">本周 ' + best.count + '/7 天</div></div>' +
+      '<div class="weekly-stat"><div class="k">最该调整</div><div class="v">' + escapeHtml(worst.habit.icon) + ' ' + escapeHtml(worst.habit.name) + '</div><div class="d">本周 ' + worst.count + '/7 天</div></div>';
+  }
+
+  function isNativeApp() {
+    return Boolean(window.Capacitor && typeof window.Capacitor.isNativePlatform === 'function' && window.Capacitor.isNativePlatform());
+  }
+
+  function localNotifications() {
+    return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications;
+  }
+
+  async function scheduleNativeReminder(time) {
+    var plugin = localNotifications();
+    if (!plugin) throw new Error('LocalNotifications plugin not found');
+    var permission = await plugin.checkPermissions();
+    if (permission.display !== 'granted') permission = await plugin.requestPermissions();
+    if (permission.display !== 'granted') throw new Error('notification permission denied');
+    await plugin.cancel({ notifications: [{ id: 1001 }] });
+    if (!time) return true;
+    var parts = time.split(':').map(Number);
+    await plugin.schedule({
+      notifications: [{
+        id: 1001,
+        title: '自律打卡',
+        body: '今天只做 1 件也算开始。',
+        schedule: { on: { hour: parts[0], minute: parts[1] }, allowWhileIdle: true },
+      }],
+    });
+    return true;
+  }
+
+  async function syncNativeReminderState() {
+    var plugin = localNotifications();
+    if (!plugin) {
+      data.pushEnabled = false;
+      save();
+      renderReminder();
+      return;
+    }
+    var pending = await plugin.getPending();
+    data.pushEnabled = Boolean(pending.notifications && pending.notifications.some(function (n) { return n.id === 1001; }));
+    save();
+    renderReminder();
+  }
+
+  async function enableNativeNotifications() {
+    var time = data.reminderTime || document.getElementById('reminder-time').value || '';
+    if (!time) {
+      toast('先设置提醒时间');
+      return;
+    }
+    await scheduleNativeReminder(time);
+    data.pushEnabled = true;
+    save();
+    renderReminder();
+    toast('本地通知已开启');
+  }
+
+  async function disableNativeNotifications() {
+    var plugin = localNotifications();
+    if (plugin) await plugin.cancel({ notifications: [{ id: 1001 }, { id: 1002 }] });
+    data.pushEnabled = false;
+    save();
+    renderReminder();
+    toast('本地通知已关闭');
+  }
+
+  async function testNativeNotification() {
+    var plugin = localNotifications();
+    if (!plugin) throw new Error('LocalNotifications plugin not found');
+    var permission = await plugin.checkPermissions();
+    if (permission.display !== 'granted') permission = await plugin.requestPermissions();
+    if (permission.display !== 'granted') throw new Error('notification permission denied');
+    await plugin.schedule({
+      notifications: [{
+        id: 1002,
+        title: '自律打卡',
+        body: '测试通知：今天只做 1 件也算开始。',
+        schedule: { at: new Date(Date.now() + 2000) },
+      }],
+    });
+    toast('测试通知已安排');
+  }
+
+  function renderReminder() {
+    var time = data.reminderTime || '';
+    var input = document.getElementById('reminder-time');
+    if (input) input.value = time;
+    var sub = document.getElementById('reminder-sub');
+    var status = document.getElementById('reminder-status');
+    var push = Boolean(data.pushEnabled);
+    if (sub) sub.textContent = time ? time : '未设置';
+    var enable = document.getElementById('enable-push');
+    var disable = document.getElementById('disable-push');
+    var test = document.getElementById('test-push');
+    if (enable) {
+      enable.style.display = push ? 'none' : '';
+      enable.textContent = isNativeApp() ? '开启通知' : '开启推送';
+    }
+    if (disable) disable.style.display = push ? '' : 'none';
+    if (test) test.style.display = push ? '' : 'none';
+    if (!status) return;
+    if (!time) {
+      status.textContent = push ? '推送已开启。设置一个时间后，服务端会按时提醒。' : '还没有设置提醒。';
+      return;
+    }
+    var timezone = (typeof Intl !== 'undefined' && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'local';
+    if (isNativeApp()) {
+      status.textContent = push
+        ? '本地通知已开启 · 每天 ' + time + '（App 关闭也会提醒）'
+        : '已设置 ' + time + ' · 开启通知后可关闭 App 提醒。';
+    } else {
+      status.textContent = push
+        ? '推送已开启 · 每天 ' + time + ' · ' + timezone + '（页面关闭也会收）'
+        : '已设置 ' + time + ' · 页面打开时提醒；开启推送可关闭页面后提醒。';
+    }
+  }
+
+  function saveReminder() {
+    var time = document.getElementById('reminder-time').value;
+    data.reminderTime = time;
+    data.lastReminderDate = data.lastReminderDate || '';
+    logEvent('reminder_set', { time: time || 'off' });
+    renderReminder();
+    toast(time ? '提醒已保存' : '提醒已关闭');
+    if (isNativeApp()) {
+      if (data.pushEnabled) scheduleNativeReminder(time).catch(function (error) {
+        toast('本地通知设置失败：' + (error && error.message ? error.message : '权限未开启'));
+      });
+      return;
+    }
+    if (data.pushEnabled) syncPushSubscription().catch(function () {});
+  }
+
+  function urlBase64ToUint8Array(base64String) {
+    var padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var rawData = atob(base64);
+    var outputArray = new Uint8Array(rawData.length);
+    for (var i = 0; i < rawData.length; i++) outputArray[i] = rawData.charCodeAt(i);
+    return outputArray;
+  }
+
+  async function getPushSubscription() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return null;
+    var registration = await navigator.serviceWorker.ready;
+    return registration.pushManager.getSubscription();
+  }
+
+  async function postPushSubscription(subscription) {
+    var reminderTime = data.reminderTime || document.getElementById('reminder-time').value || '';
+    var timezone = (typeof Intl !== 'undefined' && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
+    var response = await fetch(PUSH_API + '/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: subscription.toJSON(), reminderTime: reminderTime, timezone: timezone }),
+    });
+    if (!response.ok) throw new Error('subscribe failed: ' + response.status);
+    return response.json();
+  }
+
+  async function syncPushSubscription() {
+    if (isNativeApp()) {
+      await syncNativeReminderState();
+      return;
+    }
+    var subscription = await getPushSubscription();
+    if (!subscription) {
+      data.pushEnabled = false;
+      save();
+      renderReminder();
+      return;
+    }
+    await postPushSubscription(subscription);
+    data.pushEnabled = true;
+    save();
+    renderReminder();
+  }
+
+  async function enablePush() {
+    if (isNativeApp()) {
+      try {
+        await enableNativeNotifications();
+      } catch (error) {
+        toast('通知开启失败：' + (error && error.message ? error.message : '权限未开启'));
+      }
+      return;
+    }
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      toast('当前浏览器不支持 Web Push');
+      return;
+    }
+    try {
+      if (typeof Notification === 'undefined') {
+        toast('当前浏览器不支持通知');
+        return;
+      }
+      var permission = Notification.permission;
+      if (permission !== 'granted') permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        toast('未授权通知');
+        return;
+      }
+      var registration = await navigator.serviceWorker.ready;
+      var keyResponse = await fetch(PUSH_API + '/public-key');
+      if (!keyResponse.ok) throw new Error('push server not running');
+      var keyData = await keyResponse.json();
+      var subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(keyData.publicKey),
+        });
+      }
+      await postPushSubscription(subscription);
+      data.pushEnabled = true;
+      save();
+      renderReminder();
+      toast('推送已开启');
+    } catch (error) {
+      toast('推送开启失败：' + (error && error.message ? error.message : '服务端未启动'));
+    }
+  }
+
+  async function disablePush() {
+    if (isNativeApp()) {
+      try {
+        await disableNativeNotifications();
+      } catch (error) {
+        toast('关闭通知失败');
+      }
+      return;
+    }
+    try {
+      var subscription = await getPushSubscription();
+      if (subscription) {
+        await fetch(PUSH_API + '/unsubscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint: subscription.endpoint }),
+        });
+        await subscription.unsubscribe();
+      }
+      data.pushEnabled = false;
+      save();
+      renderReminder();
+      toast('推送已关闭');
+    } catch (error) {
+      toast('关闭推送失败');
+    }
+  }
+
+  async function testPush() {
+    if (isNativeApp()) {
+      try {
+        await testNativeNotification();
+      } catch (error) {
+        toast('测试通知失败：' + (error && error.message ? error.message : '权限未开启'));
+      }
+      return;
+    }
+    try {
+      var subscription = await getPushSubscription();
+      if (!subscription) {
+        toast('请先开启推送');
+        return;
+      }
+      var response = await fetch(PUSH_API + '/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: subscription.endpoint }),
+      });
+      if (!response.ok) throw new Error('test failed');
+      toast('测试推送已发送');
+    } catch (error) {
+      toast('测试推送失败');
+    }
+  }
+
+  function checkReminder() {
+    if (data.pushEnabled) return;
+    if (!data.reminderTime) return;
+    var now = new Date();
+    var hhmm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    var today = todayStr();
+    if (hhmm !== data.reminderTime || data.lastReminderDate === today) return;
+    data.lastReminderDate = today;
+    logEvent('reminder_fired', { time: data.reminderTime });
+    var message = '今天只做 1 件也算开始';
+    if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+      new Notification('自律打卡', { body: message });
+    } else {
+      toast('⏰ ' + message);
+    }
   }
 
   function disciplineDays() {
@@ -719,7 +1328,7 @@
       '<div class="discipline-count-label">已坚持</div>' +
       '<div class="discipline-days">' + disciplineDays() + ' <span>天</span></div>' +
       '<div class="discipline-since">开始于 ' + start + '</div>' +
-      '<button class="discipline-btn discipline-reset" data-act="reset">重新开始（破戒归零）</button>';
+      '<button class="discipline-btn discipline-reset" data-act="reset">重新开始（今天算第 1 天）</button>';
   }
 
   function renderFitness() {
@@ -764,7 +1373,7 @@
     var discIdx = stageIndexFor(discDays, 'days');
     var workIdx = stageIndexFor(workouts, 'work');
     var natural = Math.min(discIdx, workIdx);
-    // 只升不降：升级自动发生；降级只由「破戒归零」按钮触发（降一级）
+    // 只升不降：升级自动发生；降级只由「重新开始」按钮触发（降一级）
     if (data.avatarStage == null) data.avatarStage = 0;
     if (natural > data.avatarStage) { data.avatarStage = natural; save(); }
     var stage = data.avatarStage;
@@ -1094,8 +1703,10 @@
   function renderAchievements() {
     var count = ACHIEVEMENTS.filter(function (a) { return data.achievements[a.id]; }).length;
     document.getElementById('achievement-sub').textContent = count + ' / ' + ACHIEVEMENTS.length;
-
-    document.getElementById('achievements').innerHTML = ACHIEVEMENTS.map(function (a) {
+    var unlocked = ACHIEVEMENTS.filter(function (a) { return data.achievements[a.id]; });
+    var locked = ACHIEVEMENTS.filter(function (a) { return !data.achievements[a.id]; });
+    var display = showAllAchievements ? ACHIEVEMENTS : unlocked.concat(locked.slice(0, 3));
+    document.getElementById('achievements').innerHTML = display.map(function (a) {
       var u = data.achievements[a.id];
       var cls = u ? 'achievement unlocked' : 'achievement';
       var title = u ? (a.name + ' · 已于 ' + u + ' 解锁') : ('未解锁 · ' + a.desc);
@@ -1105,6 +1716,301 @@
         '<div class="a-desc">' + a.desc + '</div>' +
       '</div>';
     }).join('');
+    var toggle = document.getElementById('achievement-toggle');
+    toggle.textContent = showAllAchievements ? '收起成就墙' : '查看全部 ' + ACHIEVEMENTS.length + ' 个成就';
+    toggle.style.display = ACHIEVEMENTS.length > display.length || showAllAchievements ? 'block' : 'none';
+  }
+
+  function renderFocusOptions() {
+    var options = document.getElementById('focus-options');
+    options.innerHTML = allHabits().map(function (h) {
+      var selected = data.focusHabits.indexOf(h.id) !== -1;
+      var remove = h.custom ? '<button class="option-delete" type="button" data-delete-habit="' + escapeHtml(h.id) + '" aria-label="删除习惯">×</button>' : '';
+      return '<label class="focus-option' + (selected ? ' selected' : '') + '">' +
+        '<input type="checkbox" value="' + escapeHtml(h.id) + '"' + (selected ? ' checked' : '') + '>' +
+        '<span class="o-icon">' + escapeHtml(h.icon) + '</span>' +
+        '<span><span class="o-name">' + escapeHtml(h.name) + '</span><span class="o-note">' + escapeHtml(h.note) + '</span></span>' +
+        remove +
+      '</label>';
+    }).join('');
+  }
+
+  function openFocusModal() {
+    renderFocusOptions();
+    document.getElementById('focus-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFocusModal() {
+    document.getElementById('focus-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function openSurveyModal() {
+    try {
+      var savedUtm = JSON.parse(localStorage.getItem('habit_utm') || '{}');
+      var sourceMap = { google: 'google', xiaohongshu: 'xiaohongshu', douyin: 'douyin', facebook: 'facebook', instagram: 'instagram' };
+      var source = sourceMap[savedUtm.utm_source];
+      if (source) {
+        var input = document.querySelector('#survey-options input[value="' + source + '"]');
+        if (input) {
+          input.checked = true;
+          document.querySelectorAll('#survey-options .focus-option').forEach(function (label) {
+            label.classList.toggle('selected', label.querySelector('input').checked);
+          });
+        }
+      }
+    } catch (e) {}
+    document.getElementById('survey-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSurveyModal() {
+    document.getElementById('survey-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function finishSurvey(source) {
+    data.installSurvey = {
+      source: source,
+      inviteCode: '',
+      completedAt: new Date().toISOString()
+    };
+    logEvent(source === 'skipped' ? 'install_survey_skipped' : 'install_survey', data.installSurvey);
+    closeSurveyModal();
+    if (!data.onboarded) openFocusModal();
+  }
+
+  function submitSurvey() {
+    var selected = document.querySelector('#survey-options input:checked');
+    if (!selected) {
+      toast('先选一个来源');
+      return;
+    }
+    finishSurvey(selected.value);
+  }
+
+  function skipSurvey() {
+    finishSurvey('skipped');
+  }
+
+  function saveFocusSelection() {
+    var checked = Array.prototype.slice.call(document.querySelectorAll('#focus-options input:checked')).map(function (input) { return input.value; });
+    if (checked.length < 1) { toast('至少选 1 个今日重点'); return; }
+    if (checked.length > 3) { toast('最多选 3 个，先做最重要的'); return; }
+    data.focusHabits = checked;
+    data.onboarded = true;
+    logEvent('focus_saved', { count: checked.length });
+    closeFocusModal();
+    render();
+    toast('今日重点已更新');
+  }
+
+  function addCustomHabit() {
+    var name = document.getElementById('custom-name').value.trim();
+    if (!name) {
+      toast('先写一个习惯名称');
+      return;
+    }
+    var id = 'custom-' + Date.now().toString(36);
+    var habit = {
+      id: id,
+      name: name.slice(0, 12),
+      note: (document.getElementById('custom-note').value.trim() || '自己添加的习惯').slice(0, 24),
+      icon: (document.getElementById('custom-icon').value.trim() || '✅').slice(0, 2),
+      color: safeColor(document.getElementById('custom-color').value),
+      custom: true
+    };
+    data.customHabits.push(habit);
+    if (data.focusHabits.length < 3) data.focusHabits.push(id);
+    logEvent('custom_habit_added', { habitId: id, name: habit.name });
+    document.getElementById('custom-name').value = '';
+    document.getElementById('custom-note').value = '';
+    renderFocusOptions();
+    render();
+    toast('已添加「' + habit.name + '」');
+  }
+
+  function deleteCustomHabit(id) {
+    if (!confirm('删除这个自定义习惯？历史打卡会保留，但不再显示。')) return;
+    data.customHabits = data.customHabits.filter(function (h) { return h.id !== id; });
+    data.focusHabits = data.focusHabits.filter(function (hid) { return hid !== id; });
+    logEvent('custom_habit_deleted', { habitId: id });
+    renderFocusOptions();
+    render();
+    toast('自定义习惯已删除');
+  }
+
+  function exportData() {
+    var payload = {
+      schemaVersion: 2,
+      app: 'habit-loop-v2',
+      exportedAt: new Date().toISOString(),
+      focusHabits: data.focusHabits,
+      customHabits: data.customHabits,
+      reminderTime: data.reminderTime,
+      lastReminderDate: data.lastReminderDate || '',
+      pushEnabled: data.pushEnabled,
+      installSurvey: data.installSurvey,
+      repairWeeks: data.repairWeeks,
+      events: data.events,
+      totalCheckins: totalCount(),
+      longestStreak: bestStreakAny(),
+      disciplineStart: data.disciplineStart,
+      avatarStage: data.avatarStage,
+      plan: data.plan,
+      checkins: data.checkins,
+      workouts: data.workouts,
+      achievements: data.achievements,
+      photosIncluded: false
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'habit-loop-data.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('数据已导出');
+  }
+
+  function importData(file) {
+    if (!file) return;
+    file.text().then(function (text) {
+      var obj;
+      try {
+        obj = JSON.parse(text);
+      } catch (e) {
+        toast('文件不是有效的 JSON');
+        return;
+      }
+      var hasData = obj && typeof obj === 'object' && (obj.checkins || obj.workouts || obj.achievements || obj.focusHabits || obj.disciplineStart || obj.customHabits || obj.reminderTime);
+      if (!hasData) {
+        toast('没有找到可导入的数据');
+        return;
+      }
+      if (!confirm('导入会覆盖当前打卡、健身和成就数据，确定继续吗？')) return;
+
+      var cleanCustom = [];
+      if (Array.isArray(obj.customHabits)) {
+        var usedIds = {};
+        obj.customHabits.forEach(function (h, index) {
+          if (!h || typeof h !== 'object') return;
+          var name = String(h.name || '').trim().slice(0, 12);
+          if (!name) return;
+          var id = (typeof h.id === 'string' && /^[a-zA-Z0-9_-]+$/.test(h.id)) ? h.id : 'custom-import-' + index;
+          if (usedIds[id] || HABITS.some(function (base) { return base.id === id; })) return;
+          usedIds[id] = true;
+          cleanCustom.push({
+            id: id,
+            name: name,
+            note: String(h.note || '导入的习惯').trim().slice(0, 24),
+            icon: String(h.icon || '✅').trim().slice(0, 2),
+            color: safeColor(h.color),
+            custom: true
+          });
+        });
+      }
+
+      var validHabitIds = {};
+      HABITS.concat(cleanCustom).forEach(function (h) { validHabitIds[h.id] = true; });
+      var validAchievementIds = {};
+      ACHIEVEMENTS.forEach(function (a) { validAchievementIds[a.id] = true; });
+      var validMuscleIds = {};
+      MUSCLES.forEach(function (m) { validMuscleIds[m.id] = true; });
+
+      var cleanCheckins = {};
+      if (obj.checkins && typeof obj.checkins === 'object') {
+        Object.keys(obj.checkins).forEach(function (date) {
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
+          var list = obj.checkins[date];
+          if (!Array.isArray(list)) return;
+          var clean = list.filter(function (id) { return validHabitIds[id]; });
+          if (clean.length) cleanCheckins[date] = Array.from(new Set(clean));
+        });
+      }
+
+      var cleanWorkouts = {};
+      if (obj.workouts && typeof obj.workouts === 'object') {
+        Object.keys(obj.workouts).forEach(function (date) {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(date) && obj.workouts[date]) cleanWorkouts[date] = true;
+        });
+      }
+
+      var cleanAchievements = {};
+      if (obj.achievements && typeof obj.achievements === 'object') {
+        Object.keys(obj.achievements).forEach(function (id) {
+          if (validAchievementIds[id]) cleanAchievements[id] = typeof obj.achievements[id] === 'string' ? obj.achievements[id] : todayStr();
+        });
+      }
+
+      var cleanPlan = defaultPlan();
+      if (obj.plan && typeof obj.plan === 'object') {
+        Object.keys(cleanPlan).forEach(function (day) {
+          if (validMuscleIds[obj.plan[day]]) cleanPlan[day] = obj.plan[day];
+        });
+      }
+
+      var cleanFocus = Array.isArray(obj.focusHabits)
+        ? obj.focusHabits.filter(function (id) { return validHabitIds[id]; })
+        : [];
+      if (!cleanFocus.length) cleanFocus = DEFAULT_FOCUS.slice();
+      cleanFocus = Array.from(new Set(cleanFocus)).slice(0, 3);
+
+      var importedCount = Object.keys(cleanCheckins).reduce(function (sum, date) {
+        return sum + cleanCheckins[date].length;
+      }, 0);
+
+      var cleanRepairWeeks = {};
+      if (obj.repairWeeks && typeof obj.repairWeeks === 'object') {
+        Object.keys(obj.repairWeeks).forEach(function (key) {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(key) && obj.repairWeeks[key]) cleanRepairWeeks[key] = true;
+        });
+      }
+
+      var cleanEvents = Array.isArray(obj.events)
+        ? obj.events.filter(function (event) {
+            return event && typeof event === 'object' && typeof event.type === 'string';
+          }).slice(-EVENT_LIMIT)
+        : [];
+
+      var cleanSurvey = null;
+      if (obj.installSurvey && typeof obj.installSurvey === 'object' && typeof obj.installSurvey.source === 'string') {
+        cleanSurvey = {
+          source: obj.installSurvey.source.slice(0, 24),
+          inviteCode: String(obj.installSurvey.inviteCode || '').trim().slice(0, 16),
+          completedAt: typeof obj.installSurvey.completedAt === 'string' ? obj.installSurvey.completedAt : ''
+        };
+      }
+
+      data = {
+        checkins: cleanCheckins,
+        achievements: cleanAchievements,
+        workouts: cleanWorkouts,
+        customHabits: cleanCustom,
+        reminderTime: /^([01]\d|2[0-3]):[0-5]\d$/.test(obj.reminderTime || '') ? obj.reminderTime : '',
+        lastReminderDate: /^\d{4}-\d{2}-\d{2}$/.test(obj.lastReminderDate || '') ? obj.lastReminderDate : '',
+        pushEnabled: Boolean(obj.pushEnabled),
+        installSurvey: cleanSurvey,
+        repairWeeks: cleanRepairWeeks,
+        events: cleanEvents,
+        avatarStage: clampStage(obj.avatarStage),
+        plan: cleanPlan,
+        disciplineStart: /^\d{4}-\d{2}-\d{2}$/.test(obj.disciplineStart || '') ? obj.disciplineStart : null,
+        focusHabits: cleanFocus,
+        onboarded: true
+      };
+      save();
+      render();
+      toast('已导入 ' + importedCount + ' 条打卡记录');
+    }).catch(function () {
+      toast('读取文件失败');
+    });
+  }
+
+  function clampStage(value) {
+    var n = Number(value);
+    if (!isFinite(n)) return 0;
+    return Math.max(0, Math.min(AVATAR_STAGES.length - 1, Math.round(n)));
   }
 
   function compressImage(file, cb) {
@@ -1176,8 +2082,67 @@
 
   // ---------- 事件 ----------
   document.getElementById('habit-list').addEventListener('click', function (e) {
+    var repair = e.target.closest('[data-repair]');
+    if (repair) {
+      repairYesterday(repair.getAttribute('data-repair'));
+      return;
+    }
     var btn = e.target.closest('[data-habit]');
     if (btn) toggle(btn.getAttribute('data-habit'));
+  });
+
+  document.getElementById('edit-focus').addEventListener('click', openFocusModal);
+  document.getElementById('focus-close').addEventListener('click', closeFocusModal);
+  document.getElementById('focus-cancel').addEventListener('click', closeFocusModal);
+  document.getElementById('focus-save').addEventListener('click', saveFocusSelection);
+  document.getElementById('focus-modal').addEventListener('click', function (e) {
+    if (e.target === document.getElementById('focus-modal')) closeFocusModal();
+  });
+  document.getElementById('survey-close').addEventListener('click', skipSurvey);
+  document.getElementById('survey-skip').addEventListener('click', skipSurvey);
+  document.getElementById('survey-submit').addEventListener('click', submitSurvey);
+  document.getElementById('survey-options').addEventListener('change', function (e) {
+    if (e.target.type !== 'radio') return;
+    document.querySelectorAll('#survey-options .focus-option').forEach(function (label) {
+      label.classList.toggle('selected', label.querySelector('input').checked);
+    });
+  });
+  document.getElementById('focus-options').addEventListener('change', function (e) {
+    if (e.target.type !== 'checkbox') return;
+    var checked = document.querySelectorAll('#focus-options input:checked');
+    if (checked.length > 3) {
+      e.target.checked = false;
+      toast('最多选 3 个，先做最重要的');
+    }
+    document.querySelectorAll('#focus-options .focus-option').forEach(function (label) {
+      var input = label.querySelector('input');
+      label.classList.toggle('selected', input.checked);
+    });
+  });
+  document.getElementById('focus-options').addEventListener('click', function (e) {
+    var del = e.target.closest('[data-delete-habit]');
+    if (!del) return;
+    e.preventDefault();
+    e.stopPropagation();
+    deleteCustomHabit(del.getAttribute('data-delete-habit'));
+  });
+  document.getElementById('add-custom-habit').addEventListener('click', addCustomHabit);
+  document.getElementById('save-reminder').addEventListener('click', saveReminder);
+  document.getElementById('enable-push').addEventListener('click', enablePush);
+  document.getElementById('disable-push').addEventListener('click', disablePush);
+  document.getElementById('test-push').addEventListener('click', testPush);
+  document.getElementById('achievement-toggle').addEventListener('click', function () {
+    showAllAchievements = !showAllAchievements;
+    renderAchievements();
+  });
+  document.getElementById('export-data').addEventListener('click', exportData);
+  document.getElementById('import-data').addEventListener('click', function () {
+    document.getElementById('import-file').click();
+  });
+  document.getElementById('import-file').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (file) importData(file);
+    e.target.value = '';
   });
 
   document.getElementById('discipline-body').addEventListener('click', function (e) {
@@ -1226,13 +2191,21 @@
 
   document.getElementById('reset').addEventListener('click', function () {
     if (confirm('确定要清空所有打卡记录、健身记录和照片吗？此操作不可恢复。')) {
-      data = { checkins: {}, achievements: {}, workouts: {}, avatarStage: 0, plan: defaultPlan() };
+      data = { checkins: {}, achievements: {}, workouts: {}, avatarStage: 0, plan: defaultPlan(), focusHabits: DEFAULT_FOCUS.slice(), customHabits: [], reminderTime: '', repairWeeks: {}, events: [], pushEnabled: false, onboarded: false, installSurvey: null };
       save();
-      photoStore.clear().then(function () { render(); });
+      photoStore.clear().then(function () { render(); openFocusModal(); });
     }
   });
 
   render();
+  if (!data.installSurvey) openSurveyModal();
+  else if (!data.onboarded) openFocusModal();
+  logEvent('app_open');
+  syncPushSubscription().catch(function () {
+    data.pushEnabled = false;
+    renderReminder();
+  });
+  setInterval(checkReminder, 30000);
 })();
 </script>
 <script>
