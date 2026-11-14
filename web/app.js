@@ -1,6 +1,7 @@
 (function () {
   var config = window.HABIT_WEB_CONFIG || {};
   var params = new URLSearchParams(location.search);
+  var debugMode = params.get("gads_debug") === "1";
   var utm = {};
   ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (key) {
     if (params.get(key)) utm[key] = params.get(key);
@@ -57,6 +58,20 @@
     }
   }
 
+  function showDebugBanner() {
+    var old = document.getElementById("gads-debug-banner");
+    if (old) old.remove();
+    var box = document.createElement("div");
+    box.id = "gads-debug-banner";
+    box.textContent = "Google Ads conversion fired: " + googleAdsId + "/" + conversionLabel;
+    box.style.cssText = [
+      "position:fixed", "left:16px", "right:16px", "bottom:16px", "z-index:99999",
+      "padding:14px 16px", "border-radius:12px", "background:#0c1914", "color:#c8f45a",
+      "font:700 13px/1.4 system-ui,sans-serif", "box-shadow:0 12px 40px rgba(0,0,0,.35)"
+    ].join(";");
+    document.body.appendChild(box);
+  }
+
   send("landing_view", "landing");
   document.querySelectorAll("[data-web-app]").forEach(function (link) {
     link.addEventListener("click", function (event) {
@@ -73,9 +88,13 @@
         event.preventDefault();
         window.gtag("event", "conversion", {
           send_to: googleAdsId + "/" + conversionLabel,
-          event_callback: go,
+          event_callback: function () { if (!debugMode) go(); },
           event_timeout: 800
         });
+        if (debugMode) {
+          showDebugBanner();
+          return;
+        }
         setTimeout(go, 900);
       }
     });
